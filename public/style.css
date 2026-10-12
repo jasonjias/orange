@@ -87,3 +87,13 @@ select{background:var(--panel2);color:var(--text);border:1px solid var(--line);b
 .ti .d{color:var(--muted);font-size:12px}
 .hidden-note{color:var(--muted);font-size:13px;margin-top:4px}
 @media(max-width:1200px){main{grid-template-columns:1fr;height:auto}}
+
+/* trace */
+.trace{font:12px/1.5 ui-monospace,Menlo,monospace;border-left:2px solid var(--line);padding:2px 0 2px 8px;margin-bottom:8px;display:flex;flex-direction:column;gap:2px;white-space:normal;font-style:normal;text-align:left}
+.ts{display:flex;gap:6px;color:#aab0bd}
+.ts .ic{width:16px;flex:none}
+.ts.s-allowed{color:#7fe5a8}
+.ts.s-blocked{color:#ff8587}
+.ts.s-withheld{color:#e0a058}
+.trace.live .ts{opacity:0;animation:tin .4s forwards}
+@keyframes tin{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}

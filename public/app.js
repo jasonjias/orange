@@ -116,10 +116,15 @@ function loadBrain(){
 
 /* ---------- chat ---------- */
 function hist(){return histories[me]||(histories[me]=[])}
+var ICON={identity:'\uD83E\uDEAA',search:'\uD83D\uDD0E',withheld:'\uD83D\uDD12',tool:'\uD83D\uDEE0',allowed:'\u2705',blocked:'\u26D4',memory:'\uD83E\uDDE0'};
+function traceHtml(tr,live){
+  if(!tr||!tr.length)return '';
+  return '<div class="trace'+(live?' live':'')+'">'+tr.map(function(t,i){return '<div class="ts s-'+esc(t.step)+'"'+(live?' style="animation-delay:'+(i*0.9)+'s"':'')+'><span class="ic">'+(ICON[t.step]||'\u2022')+'</span><span>'+esc(t.text)+'</span></div>'}).join('')+'</div>';
+}
 function renderMsg(m){
   if(m.role==='u')return '<div class="m u">'+esc(m.text)+'</div>';
-  if(m.role==='think')return '<div class="m a think">thinking... searching the brain as '+esc(m.name)+'<span class="dots"></span></div>';
-  var h='<div class="m a">'+esc(m.text);
+  if(m.role==='think')return '<div class="m a think">'+traceHtml([{step:'identity',text:'Signing in as '+m.name+'\u2026'},{step:'search',text:'Searching the brain with your clearance\u2026'},{step:'memory',text:'Reading and reasoning over what came back\u2026'}],true)+'<span class="dots"></span></div>';
+  var h='<div class="m a">'+traceHtml(m.trace)+esc(m.text);
   if(m.action){
     var done=m.action.status==='done';
     var res=typeof m.action.result==='string'?m.action.result:JSON.stringify(m.action.result);
@@ -149,7 +154,7 @@ function ask(text){
   pending[who]=true;renderChatIf(who);
   j('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({as:who,message:text})}).then(function(r){
     h.splice(h.indexOf(th),1);
-    h.push({role:'a',text:r.answer||'(no answer)',action:r.action||null,sources:r.sources||[],withheld:r.withheld||0});
+    h.push({role:'a',text:r.answer||'(no answer)',action:r.action||null,sources:r.sources||[],withheld:r.withheld||0,trace:r.trace||[]});
     if(r.action)loadTimeline();
   }).catch(function(e){
     h.splice(h.indexOf(th),1);h.push({role:'a',text:'Error: '+e.message});

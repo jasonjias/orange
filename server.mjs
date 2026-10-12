@@ -40,9 +40,11 @@ async function search(as, query, max = 25) {
     hydra("POST", "/query", { ...base, acl: [email(as)] }),
     hydra("POST", "/query", base), // unfiltered, used only to count what was withheld
   ]);
-  const seen = new Set((mine.chunks || []).map((c) => c.id));
-  const withheld = new Set((all.chunks || []).map((c) => c.id).filter((id) => !seen.has(id)));
-  return { chunks: mine.chunks || [], withheld: withheld.size };
+  // Hub and category nodes exist for the graph only; keep them out of answers and counts.
+  const real = (r) => (r.chunks || []).filter((c) => c.id !== "brain-hub" && !String(c.id).startsWith("cat-"));
+  const seen = new Set(real(mine).map((c) => c.id));
+  const withheld = new Set(real(all).map((c) => c.id).filter((id) => !seen.has(id)));
+  return { chunks: real(mine), withheld: withheld.size };
 }
 
 // ---------- LLM (local claude CLI) ----------

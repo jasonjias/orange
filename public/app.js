@@ -47,7 +47,7 @@ function svg(tag,attrs,parent){var e=document.createElementNS(NS,tag);for(var k 
 var lastVT=[0,0],glowIds=null,glowWho=null,glowTimer=null;
 function setCount(){
   var n=(glowIds&&glowWho===me)?document.querySelectorAll('#graph g.glow').length:0;
-  $('count').innerHTML='You can see <b>'+lastVT[0]+'</b> of <b>'+lastVT[1]+'</b> sources'+(n?' &middot; this answer used <b>'+n+'</b>':'');
+  $('count').innerHTML='You can see <b>'+lastVT[0]+'</b> of <b>'+lastVT[1]+'</b> sources'+(n?' &middot; searched for this answer: <b>'+n+'</b>':'');
 }
 function applyGlow(){
   Array.prototype.forEach.call(document.querySelectorAll('#graph g[data-id]'),function(g){

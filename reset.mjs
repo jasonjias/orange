@@ -10,5 +10,6 @@ const list = await hydra("POST", "/context/list", { database: DB, type: "knowled
 const ids = (list.sources || []).map((s) => s.id).filter((id) => id.startsWith("pulp-4"));
 if (ids.length) {
   const res = await hydra("DELETE", "/context", { database: DB, type: "knowledge", ids });
-  console.log(`deleted ${res.deleted_count ?? ids.length} sources: ${ids.join(", ")}`);
+  console.log(`deleted ${res.deleted_count ?? 0} of ${ids.length} sources: ${ids.join(", ")}`);
+  for (const r of res.results || []) if (!r.deleted) console.log(`  not deleted ${r.id}: ${r.error} (re-run reset.mjs once indexing finishes)`);
 } else console.log("no pulp-4* sources in HydraDB");

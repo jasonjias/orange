@@ -68,6 +68,8 @@ function parseJson(text) {
   try { return JSON.parse(m ? m[0] : text); } catch { return { answer: text }; }
 }
 
+const levelName = (l) => ({ "-1": "public", 0: "contractor", 1: "employee", 2: "manager", 3: "exec" })[l] ?? `L${l}`;
+
 // ---------- tools, enforced server-side ----------
 function toolAllowed(as, tool, project) {
   const t = ORANGE.tools.find((x) => x.id === tool);
@@ -76,8 +78,7 @@ function toolAllowed(as, tool, project) {
   const needLevel = t.requires_level ?? (t.requires === "exec" ? 3 : 0);
   const needProject = t.requires_project ?? t.requires === "project";
   if (me.level !== undefined && me.level < needLevel) {
-    const names = ["contractor", "employee", "manager", "exec"];
-    return { ok: false, why: `${t.name} needs ${names[needLevel]} level (L${needLevel}). You are L${me.level}.` };
+    return { ok: false, why: `${t.name} needs ${levelName(needLevel)} level (L${needLevel}). You are ${levelName(me.level)}.` };
   }
   if (needProject) {
     if (!project) return { ok: false, why: "Which project?" };
@@ -130,12 +131,18 @@ async function runTool(as, action) {
 async function ask(as, message) {
   const me = person(as);
   if (!me) throw new Error(`Unknown person ${as}`);
+  const trace = [];
+  const disc = me.disclosures.length ? me.disclosures.join(", ") : "none";
+  trace.push({ step: "identity", text: `Signed in as ${me.name}: ${levelName(me.level)} (L${me.level}), disclosed on: ${disc}` });
   const { chunks, withheld } = await search(as, message);
+  const nSrc = new Set(chunks.map((c) => c.id)).size;
+  trace.push({ step: "search", text: `Searched HydraDB with acl [${email(as)}]: ${nSrc} sources you can see` });
+  trace.push({ step: "withheld", text: withheld ? `${withheld} matching sources withheld above your clearance (never sent to the AI)` : "Nothing withheld for this question" });
   const context = chunks.map((c, i) => `[${i + 1}] ${c.source_title}\n${c.chunk_content}`).join("\n\n");
   const myActions = loadTimeline().filter((x) => x.who === as).slice(-8).map((x) => `- ${x.when.slice(0, 10)}: ${x.summary}`).join("\n");
   const tools = ORANGE.tools.map((t) => `- ${t.id}: ${t.description}`).join("\n");
 
-  const prompt = `You are the personal work agent for ${me.name} (${me.title}, ${me.role || "employee"}, level L${me.level ?? "?"}, ${me.team} team) at Orange, today ${new Date().toISOString().slice(0, 10)}.
+  const prompt = `${me.level < 0 ? "This person is OUTSIDE Orange (public). Only share public information. Never confirm or deny unannounced products or codenames; say Orange doesn't comment on unannounced products and give the press contact.\n" : ""}You are the personal work agent for ${me.name} (${me.title}, ${me.role || "employee"}, level L${me.level ?? "?"}, ${me.team} team) at Orange, today ${new Date().toISOString().slice(0, 10)}.
 You answer using ONLY the company brain context below. That context is already filtered to what ${me.name.split(" ")[0]} is disclosed on.
 If the context does not contain something, say you can't see it. Never guess details of projects not in the context.
 If a codename is mentioned but you have no details, say they aren't disclosed on it and name the owner if the org chart says who it is.
@@ -159,11 +166,17 @@ Request an action only if the user asks you to do something. When you request on
 
   const out = parseJson(await llm(prompt));
   let action = null;
-  if (out.action && out.action.tool) action = await runTool(as, out.action);
+  if (out.action && out.action.tool) {
+    const a = out.action;
+    trace.push({ step: "tool", text: `Agent requested ${a.tool}${a.args && a.args.project ? ` on ${a.args.project}` : ""}` });
+    action = await runTool(as, a);
+    trace.push({ step: action.status === "done" ? "allowed" : "blocked", text: action.status === "done" ? `Server check passed, ran it: ${action.result}` : `Server check failed: ${action.result}` });
+    if (action.status === "done") trace.push({ step: "memory", text: "Action written to the timeline and back into the brain" });
+  }
   // The model writes before enforcement runs, so the server's verdict replaces its answer on a block.
   if (action && action.status === "blocked") out.answer = `Blocked. ${action.result}` + (/disclosed/.test(action.result) ? " Ask the owner to request disclosure for you in Seed." : " Ask your manager.");
   const sources = [...new Map(chunks.map((c) => [c.id, c.source_title])).entries()].map(([id, title]) => ({ id, title }));
-  return { as, answer: out.answer || "", action, sources, withheld };
+  return { as, answer: out.answer || "", action, sources, withheld, trace };
 }
 
 const CATEGORIES = [

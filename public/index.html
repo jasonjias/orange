@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orange Company Brain</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header>
+  <div><h1><span>Orange</span> Company Brain</h1>
+  <div class="sub">One brain. Your clearance decides what you find and what you can do.</div></div>
+  <div class="pill" id="viewing">Viewing as ...</div>
+</header>
+<main>
+  <section><h2>Org chart (click to log in as)</h2><div id="org"></div></section>
+  <section><h2>Brain graph</h2><div id="count">&nbsp;</div><div id="note"></div><div id="graph"></div>
+    <div class="legend"><span style="color:var(--orange)">&#9679; visible to you</span><span>&#128274; restricted</span></div></section>
+  <section>
+    <h2>Agent chat</h2>
+    <div id="msgs"></div>
+    <div class="sugg" id="sugg"></div>
+    <form id="f"><input type="text" id="q" placeholder="Ask your agent..." autocomplete="off"><button class="go" id="send">Ask</button></form>
+    <div id="tl"><div class="hd"><h2 style="margin:0">Timeline of</h2><select id="tlsel"></select></div><div id="tlist"></div><div class="hidden-note" id="tlhid"></div></div>
+  </section>
+</main>
+<script src="app.js"></script>
+</body></html>

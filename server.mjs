@@ -2,11 +2,15 @@
 // POST /api/ask {as, message} -> {answer, sources, withheld, action}
 // GET  /api/timeline?as=<viewer>&of=<person> -> {items, hidden}
 // GET  /api/org -> people, projects, tools
+// GET  /api/brain?as=<id> -> hub + 5 categories with per-viewer visibility
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
-import { ROOT, DB, ORANGE, email, person, canSee, hydra, ingest, toKnowledge } from "./lib.mjs";
+import * as lib from "./lib.mjs";
+const { ROOT, DB, ORANGE, email, person, canSee, hydra, ingest, toKnowledge } = lib;
+// v2 rule: level AND project disclosure. Falls back to project-only if lib is older.
+const canSeeDoc = (id, doc) => (lib.canSeeDoc ? lib.canSeeDoc(id, doc) : canSee(id, doc.project));
 
 const PORT = Number(process.env.PORT || 3000);
 const STATE = path.join(ROOT, "state");
@@ -65,8 +69,14 @@ function parseJson(text) {
 function toolAllowed(as, tool, project) {
   const t = ORANGE.tools.find((x) => x.id === tool);
   if (!t) return { ok: false, why: `Unknown tool ${tool}` };
-  if (t.requires === "exec" && !canSee(as, "exec")) return { ok: false, why: "Exec only." };
-  if (t.requires === "project") {
+  const me = person(as);
+  const needLevel = t.requires_level ?? (t.requires === "exec" ? 3 : 0);
+  const needProject = t.requires_project ?? t.requires === "project";
+  if (me.level !== undefined && me.level < needLevel) {
+    const names = ["contractor", "employee", "manager", "exec"];
+    return { ok: false, why: `${t.name} needs ${names[needLevel]} level (L${needLevel}). You are L${me.level}.` };
+  }
+  if (needProject) {
     if (!project) return { ok: false, why: "Which project?" };
     if (!canSee(as, project)) {
       const pr = ORANGE.projects.find((p) => p.id === project);
@@ -92,7 +102,7 @@ async function runTool(as, action) {
     summary = `Filed ${id}: ${args.title} (${sev}, ${team})`;
     // Write the ticket back into the brain, gated to the project's disclosure group.
     await ingest([toKnowledge({
-      id: id.toLowerCase(), type: "ticket", project, author: as, date: now.toISOString().slice(0, 10),
+      id: id.toLowerCase(), type: "ticket", category: "documents", level: 0, project, author: as, date: now.toISOString().slice(0, 10),
       title: `${id}: ${args.title}`,
       text: `Severity ${sev}. Assigned: ${team}. Reporter: ${person(as).name}. Filed ${now.toISOString().slice(0, 10)}. ${args.details || ""}`,
     })]);
@@ -122,7 +132,7 @@ async function ask(as, message) {
   const myActions = loadTimeline().filter((x) => x.who === as).slice(-8).map((x) => `- ${x.when.slice(0, 10)}: ${x.summary}`).join("\n");
   const tools = ORANGE.tools.map((t) => `- ${t.id}: ${t.description}`).join("\n");
 
-  const prompt = `You are the personal work agent for ${me.name} (${me.title}, ${me.team} team) at Orange, today ${new Date().toISOString().slice(0, 10)}.
+  const prompt = `You are the personal work agent for ${me.name} (${me.title}, ${me.role || "employee"}, level L${me.level ?? "?"}, ${me.team} team) at Orange, today ${new Date().toISOString().slice(0, 10)}.
 You answer using ONLY the company brain context below. That context is already filtered to what ${me.name.split(" ")[0]} is disclosed on.
 If the context does not contain something, say you can't see it. Never guess details of projects not in the context.
 If a codename is mentioned but you have no details, say they aren't disclosed on it and name the owner if the org chart says who it is.
@@ -153,6 +163,26 @@ Request an action only if the user asks you to do something. When you request on
   return { as, answer: out.answer || "", action, sources, withheld };
 }
 
+const CATEGORIES = [
+  ["contacts", "Contacts"], ["disclosures", "Disclosures"], ["tools", "Tools"], ["documents", "Documents"], ["branding", "Branding"],
+];
+function brain(viewer) {
+  const filed = loadTimeline().filter((x) => x.tool === "pulp.file_bug" && /PULP-4[1-9]\d/.test(x.summary));
+  const extra = filed.map((x) => ({ id: x.summary.match(/PULP-\d+/)[0].toLowerCase(), category: "documents", title: x.summary.replace(/^Filed /, ""), project: x.project, level: 0 }));
+  const docs = [...ORANGE.docs, ...extra];
+  return {
+    hub: `${ORANGE.company} Company Brain`,
+    viewer,
+    categories: CATEGORIES.map(([id, label]) => ({
+      id, label,
+      sources: docs.filter((d) => (d.category || "documents") === id).map((d) => {
+        const visible = canSeeDoc(viewer, { level: d.level ?? 0, project: d.project });
+        return { id: d.id, title: visible ? d.title : "Restricted", project: d.project, level: d.level ?? 0, visible };
+      }),
+    })),
+  };
+}
+
 function timeline(viewer, of) {
   const items = loadTimeline().filter((x) => x.who === of).sort((a, b) => a.when.localeCompare(b.when));
   const visible = items.filter((x) => canSee(viewer, x.project));
@@ -177,6 +207,7 @@ http.createServer(async (req, res) => {
       console.log(`[ask] ${as} "${message.slice(0, 60)}" -> ${out.action ? out.action.status + " " + out.action.tool : "no action"}, withheld=${out.withheld}, ${Date.now() - t}ms`);
       return send(res, 200, out);
     }
+    if (url.pathname === "/api/brain") return send(res, 200, brain(url.searchParams.get("as") || "steve"));
     if (url.pathname === "/api/timeline") return send(res, 200, timeline(url.searchParams.get("as"), url.searchParams.get("of")));
     if (url.pathname === "/api/org") {
       return send(res, 200, { company: ORANGE.company, people: ORANGE.people, projects: ORANGE.projects, tools: ORANGE.tools });

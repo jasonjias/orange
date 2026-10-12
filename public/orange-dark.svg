@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- macOS traffic light pattern: saturated base, soft glow rising from the bottom,
+         thin rim that is bright at top and bottom and darker at the sides -->
+    <radialGradient id="glow" cx="50%" cy="80%" r="58%">
+      <stop offset="0%" stop-color="#FFC56B" stop-opacity="0.95"/>
+      <stop offset="60%" stop-color="#FFA330" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#FF8C00" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFC27A"/>
+      <stop offset="18%" stop-color="#D96A00"/>
+      <stop offset="75%" stop-color="#D96A00"/>
+      <stop offset="100%" stop-color="#FFD596"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" fill="#111111"/>
+  <!-- fruit -->
+  <circle cx="256" cy="256" r="196" fill="#F07D00"/>
+  <circle cx="256" cy="256" r="196" fill="url(#glow)"/>
+  <circle cx="256" cy="256" r="192" fill="none" stroke="url(#rim)" stroke-width="8"/>
+
+</svg>

@@ -97,3 +97,9 @@ select{background:var(--panel2);color:var(--text);border:1px solid var(--line);b
 .ts.s-withheld{color:#e0a058}
 .trace.live .ts{opacity:0;animation:tin .4s forwards}
 @keyframes tin{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+
+/* glow */
+#graph .ring{opacity:0;pointer-events:none}
+#graph .glow .ring{opacity:1;animation:pulse 1s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+#graph .glow circle:first-child{stroke:#fff;stroke-width:4}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.35);opacity:.45}}

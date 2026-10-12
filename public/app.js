@@ -43,10 +43,27 @@ function mockBrain(){
     return {id:c.id+i,title:s[0],project:s[1],level:s[2],visible:lvl>=s[2]&&(!s[1]||disc.indexOf(s[1])>=0)}})}})};
 }
 function svg(tag,attrs,parent){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+var lastVT=[0,0],glowIds=null,glowWho=null,glowTimer=null;
+function setCount(){
+  var n=(glowIds&&glowWho===me)?document.querySelectorAll('#graph g.glow').length:0;
+  $('count').innerHTML='You can see <b>'+lastVT[0]+'</b> of <b>'+lastVT[1]+'</b> sources'+(n?' &middot; this answer used <b>'+n+'</b>':'');
+}
+function applyGlow(){
+  Array.prototype.forEach.call(document.querySelectorAll('#graph g[data-id]'),function(g){
+    var on=!!(glowIds&&glowWho===me&&glowIds.indexOf(g.getAttribute('data-id'))>=0);
+    if(on)g.classList.add('glow');else g.classList.remove('glow');
+  });
+  setCount();
+}
+function glow(who,sources){
+  glowWho=who;glowIds=(sources||[]).map(function(s){return s.id});
+  clearTimeout(glowTimer);applyGlow();
+  glowTimer=setTimeout(function(){glowIds=null;applyGlow()},8000);
+}
 function drawBrain(b){
   var cats=b.categories||[],tot=0,vis=0;
   cats.forEach(function(c){c.sources.forEach(function(s){tot++;if(s.visible)vis++})});
-  $('count').innerHTML='You can see <b>'+vis+'</b> of <b>'+tot+'</b> sources';
+  lastVT=[vis,tot];setCount();
   $('note').textContent=b.mock?'brain endpoint pending (showing static mock)':'';
   var W=900,H=800,cx=W/2,cy=H/2,R=235;
   var box=$('graph');box.innerHTML='';
@@ -61,12 +78,14 @@ function drawBrain(b){
       var sa=a+(n===1?0:(k/(n-1)-0.5)*spread),sx=x+r2*Math.cos(sa),sy=y+r2*Math.sin(sa);
       svg('line',{x1:x,y1:y,x2:sx,y2:sy,stroke:src.visible?'#FF7A00':'#444','stroke-opacity':src.visible?.55:.5,'stroke-width':1.5},layer1);
       var ng=svg('g',{transform:'translate('+sx+','+sy+')',style:'cursor:default'},layer2);
+      ng.setAttribute('data-id',src.id);
       var t=svg('title',{},ng);
       if(src.visible){
         ng.setAttribute('class','node'+(src.id===openId?' open':''));ng.setAttribute('style','cursor:pointer');
         ng.__id=src.id;ng.onclick=function(){openDoc(src,c.label)};
         t.textContent=src.title+(src.project?' ['+src.project+']':'')+' (L'+src.level+'). Click to read';
         svg('circle',{r:13,fill:'#FF7A00',stroke:'#ffb066','stroke-width':2},ng);
+        svg('circle',{r:19,fill:'none',stroke:'#fff','stroke-width':4,'class':'ring'},ng);
         svg('circle',{r:5,fill:'#fff3e6'},ng);
       }else{
         t.textContent='Restricted';
@@ -83,6 +102,7 @@ function drawBrain(b){
   var hg=svg('g',{transform:'translate('+cx+','+cy+')'},layer2);
   svg('circle',{r:62,fill:'#FF7A00'},hg);
   [['Orange',-8],['Brain',12]].forEach(function(w){var q=svg('text',{'text-anchor':'middle','dominant-baseline':'central',y:w[1],fill:'#111','font-size':20,'font-weight':800},hg);q.textContent=w[0]});
+  applyGlow();
   try{var bb=s.getBBox(),pad=24;s.setAttribute('viewBox',(bb.x-pad)+' '+(bb.y-pad)+' '+(bb.width+2*pad)+' '+(bb.height+2*pad))}catch(e){}
 }
 /* ---------- source detail (click an orange node) ---------- */
@@ -156,6 +176,7 @@ function ask(text){
     h.splice(h.indexOf(th),1);
     h.push({role:'a',text:r.answer||'(no answer)',action:r.action||null,sources:r.sources||[],withheld:r.withheld||0,trace:r.trace||[]});
     if(r.action)loadTimeline();
+    glow(who,r.sources);
   }).catch(function(e){
     h.splice(h.indexOf(th),1);h.push({role:'a',text:'Error: '+e.message});
   }).then(function(){pending[who]=false;renderChatIf(who)});

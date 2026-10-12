@@ -158,7 +158,7 @@ Request an action only if the user asks you to do something. When you request on
   let action = null;
   if (out.action && out.action.tool) action = await runTool(as, out.action);
   // The model writes before enforcement runs, so the server's verdict replaces its answer on a block.
-  if (action && action.status === "blocked") out.answer = `Blocked. ${action.result} Ask the owner to request disclosure for you in Seed.`;
+  if (action && action.status === "blocked") out.answer = `Blocked. ${action.result}` + (/disclosed/.test(action.result) ? " Ask the owner to request disclosure for you in Seed." : " Ask your manager.");
   const sources = [...new Map(chunks.map((c) => [c.id, c.source_title])).entries()].map(([id, title]) => ({ id, title }));
   return { as, answer: out.answer || "", action, sources, withheld };
 }

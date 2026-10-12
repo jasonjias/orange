@@ -36,7 +36,12 @@ Only Steve sees both, so only Steve's agent catches that Strawberry is at risk.
 
 ## Files
 - `lib.mjs` config, HydraDB client, acl helpers. `ingest.mjs` loads data (`node ingest.mjs`).
-- `server.mjs` + `public/index.html`: agent API and UI (in progress).
+- `server.mjs` (DONE, `node server.mjs`, port 3000). Agent LLM = local `claude -p --model sonnet`, ~10-20 s per ask.
+  - `POST /api/ask {as:"riley", message}` -> `{answer, action:{tool,status:"done"|"blocked",result}|null, sources:[{id,title}], withheld:N}`
+  - `GET /api/timeline?as=<viewer>&of=<person>` -> `{items:[{who,when,project,tool,summary}], hidden:N}`
+  - `GET /api/org` -> `{company, people, projects, tools}`
+  - State in `state/timeline.json` (delete it to reset the demo). Filed bugs are ingested back into HydraDB.
+- `public/index.html`: UI (TODO). Static files under public/ are served by server.mjs.
 
 ## Demo order (~4 min)
 1. Structure: HydraDB dashboard graph + our org chart.

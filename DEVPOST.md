@@ -77,7 +77,7 @@ Access rule: a person sees a document only if their level is at least the docume
 
 ## What's next
 
-- Real identity (SSO) in place of the persona switcher.
+- Port onto digohq/app-starter so real org roles and SSO set each person's HydraDB acl, replacing the persona switcher.
 - Connectors for real tools: Jira, Confluence, Slack, Drive.
 - Disclosure requests: ask the owner for access, with approval and expiry.
 - Audit view for security teams: who asked what, what was withheld.

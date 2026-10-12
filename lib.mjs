@@ -15,15 +15,32 @@ export const ORANGE = JSON.parse(fs.readFileSync(path.join(ROOT, "data/orange.js
 export const email = (id) => `${id}@${ORANGE.domain}`;
 export const person = (id) => ORANGE.people.find((p) => p.id === id);
 
-// Disclosure groups expand to the emails of everyone disclosed on them.
-// null group = open to everyone (no acl).
-export function aclFor(group) {
-  if (!group) return undefined;
-  return ORANGE.people.filter((p) => p.disclosures.includes(group)).map((p) => email(p.id));
+// Access rule: person.level >= doc.level AND (doc.project is null OR person is disclosed on it).
+export const CATEGORIES = [
+  { id: "contacts", label: "Contacts" },
+  { id: "disclosures", label: "Disclosures" },
+  { id: "tools", label: "Tools" },
+  { id: "documents", label: "Documents" },
+  { id: "branding", label: "Branding" },
+];
+
+export function canSeeDoc(personId, { level = 0, project = null } = {}) {
+  const p = person(personId);
+  if (!p) return false;
+  return p.level >= (level || 0) && (!project || p.disclosures.includes(project));
 }
 
-export function canSee(personId, group) {
-  return !group || person(personId).disclosures.includes(group);
+// Emails of everyone who can see the doc. undefined = open (all 8 people can see it, no acl).
+export function aclFor(doc) {
+  const d = { level: doc.level || 0, project: doc.project || null };
+  const ids = ORANGE.people.filter((p) => canSeeDoc(p.id, d)).map((p) => p.id);
+  if (ids.length === ORANGE.people.length) return undefined;
+  return ids.map(email);
+}
+
+// Project-only check (compat).
+export function canSee(personId, project) {
+  return !project || person(personId).disclosures.includes(project);
 }
 
 export async function hydra(method, route, body, { form } = {}) {
@@ -52,9 +69,9 @@ export function toKnowledge(d) {
     type: d.type,
     timestamp: `${d.date}T12:00:00Z`,
     content: { text: d.text },
-    additional_metadata: { project: d.project || "open", author: d.author || "" },
+    additional_metadata: { project: d.project || "open", author: d.author || "", category: d.category || "documents", level: d.level || 0 },
   };
-  const acl = aclFor(d.project);
+  const acl = aclFor(d);
   if (acl) item.acl = acl;
   return item;
 }

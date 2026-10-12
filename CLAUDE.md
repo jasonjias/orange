@@ -49,3 +49,26 @@ Only Steve sees both, so only Steve's agent catches that Strawberry is at risk.
 3. Riley asks: full answer. Riley files a Pulp bug (action). Asks again, new ticket shows up.
 4. Riley's timeline viewed as Bob (hidden tasks) vs Steve (all).
 5. Steve: "What's at risk across all projects?" Catches the 9.2 slip hitting Strawberry.
+
+## V2 CONTRACT (3:00 PM) — all parallel sessions build to this
+Access rule: a person sees a doc iff `person.level >= doc.level` AND (`doc.project` is null OR `doc.project` in `person.disclosures`).
+Levels: 0 contractor/public, 1 employee (engineer, intern), 2 manager, 3 exec.
+
+People (data/orange.json `people[]`): `{id, name, title, role: ceo|manager|engineer|intern|contractor, team, level, manager, disclosures[]}`
+- steve CEO Exec L3 [clementine,strawberry,navel] · dana manager Watch L2 [clementine,strawberry] · morgan manager OrangeOS L2 [navel]
+- riley engineer Watch L1 [clementine,strawberry] · bob engineer OrangeOS L1 [navel] · sam intern Watch L1 [] · casey contractor Watch (display vendor liaison) L0 [clementine] · priya manager Marketing L2 []
+
+Docs (`docs[]`): `{id, category, type, title, project|null, level, date, text}`.
+`category` is one of the 5 brain spokes: `contacts | disclosures | tools | documents | branding`.
+- contacts: org chart, team pages. disclosures: disclosure policy + one Seed roster per project (project-gated). tools: one doc per tool.
+- documents: wiki, policies, meeting notes, Pulp tickets, board notes (L3), a manager-only doc (L2). branding: brand guide (L0), launch messaging (project-gated).
+
+Tools (`tools[]`): `{id, name, requires_level, requires_project: bool, description}`.
+
+lib.mjs exports (server.mjs depends on these): `ORANGE, DB, email, person, hydra, ingest, toKnowledge(doc), aclFor(doc)`, `canSeeDoc(personId, {level, project})`, `canSee(personId, project)` (project-only check, kept for compat).
+
+Server endpoints (owned by main session): existing ones plus
+- `GET /api/brain?as=<id>` -> `{hub:"Orange Company Brain", categories:[{id, label, sources:[{id,title,project,level,visible:bool}]}]}` (title shown as "Restricted" when not visible)
+- `GET /api/org` people now include role and level.
+
+File ownership: data agent = data/, lib.mjs, ingest.mjs, reset.mjs. UI agent = public/. Docs agent = DEMO.md, DEVPOST.md. Main session = server.mjs, CLAUDE.md.

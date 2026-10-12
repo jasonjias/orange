@@ -4,7 +4,7 @@ var $=function(id){return document.getElementById(id)};
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 var NS='http://www.w3.org/2000/svg';
 var people=[],byId={},me='steve',histories={},pending={};
-var SUGG=["What's the status of Strawberry?","What is Clementine?","File a bug on Strawberry: hydration sensor reads zero after reboot","What's at risk across all projects this quarter?","What's our time off policy?"];
+var SUGG=["Is Orange working on a new Watch?","What's the status of Strawberry?","What is Clementine?","File a bug on Strawberry: hydration sensor reads zero after reboot","What's at risk across all projects this quarter?","What's our time off policy?"];
 try{me=localStorage.getItem('persona')||'steve'}catch(e){}
 
 function j(url,opts){return fetch(url,opts).then(function(r){if(!r.ok){var e=new Error('HTTP '+r.status);e.status=r.status;throw e}return r.json()})}
@@ -16,17 +16,18 @@ function renderOrg(){
   people.forEach(function(p){ if(p.manager&&byId[p.manager]){(kids[p.manager]=kids[p.manager]||[]).push(p)} else roots.push(p)});
   function node(p){
     var chips=(p.disclosures||[]).map(function(d){return '<span class="chip proj">'+esc(d)+'</span>'}).join('');
-    var lv=(p.level!=null)?'<span class="lvl">L'+p.level+'</span>':'';
+    var lv=(p.level!=null)?'<span class="lvl">'+(p.level<0?'Public':'L'+p.level)+'</span>':'';
     var h='<li><div class="card'+(p.id===me?' sel':'')+'" data-id="'+p.id+'"><div class="n"><span>'+esc(p.name)+'</span>'+lv+'</div><div class="t">'+esc(p.title||p.role||'')+' &middot; '+esc(p.team||'')+'</div>'+(chips?'<div class="chips">'+chips+'</div>':'<div class="chips"><span class="chip">no project disclosures</span></div>')+'</div>';
     if(kids[p.id]) h+='<ul>'+kids[p.id].map(node).join('')+'</ul>';
     return h+'</li>';
   }
-  $('org').innerHTML='<div class="tree"><ul>'+roots.map(node).join('')+'</ul></div>';
+  var outs=roots.filter(function(p){return p.role==='outsider'||p.level<0}),mains=roots.filter(function(p){return outs.indexOf(p)<0});
+  $('org').innerHTML='<div class="orgrow"><div class="tree"><ul>'+mains.map(node).join('')+'</ul></div>'+(outs.length?'<div class="outside"><div class="olabel">Outside Orange</div><div class="tree"><ul>'+outs.map(node).join('')+'</ul></div></div>':'')+'</div>';
   Array.prototype.forEach.call(document.querySelectorAll('.card'),function(c){c.onclick=function(){setPersona(c.getAttribute('data-id'))}});
 }
 function renderPill(){
   var p=cur();
-  $('viewing').innerHTML='Viewing as <b>'+esc(p.name)+'</b> <small>'+esc(p.title||p.role||'')+(p.level!=null?' &middot; L'+p.level:'')+'</small>';
+  $('viewing').innerHTML='Viewing as <b>'+esc(p.name)+'</b> <small>'+esc(p.title||p.role||'')+(p.level!=null?' &middot; '+(p.level<0?'Public':'L'+p.level):'')+'</small>';
 }
 
 /* ---------- brain graph ---------- */

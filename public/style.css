@@ -121,3 +121,11 @@ button.go.alt{background:var(--panel2);color:var(--orange);border:1px solid var(
 .ohd .t{color:var(--muted);font-size:13px}
 .oa{font-size:14px;white-space:pre-wrap;color:#e3e6ec}
 .oa.clip{cursor:pointer}
+
+/* outsiders */
+.orgrow{display:flex;align-items:flex-start;justify-content:center;gap:40px;min-width:max-content}
+.outside{border-left:2px dashed #4a4f5c;padding-left:30px}
+.olabel{color:var(--muted);font-size:12px;letter-spacing:1.5px;text-transform:uppercase;text-align:center;margin-bottom:8px}
+.card.out{border-style:dashed;border-color:#6b7280}
+.card.out .lvl{background:#6b7280;color:#fff}
+.ocard.out .lvl{background:#6b7280;color:#fff}

@@ -21,7 +21,7 @@ function renderOrg(){
     if(kids[p.id]) h+='<ul>'+kids[p.id].map(node).join('')+'</ul>';
     return h+'</li>';
   }
-  $('org').innerHTML='<ul class="tree">'+roots.map(node).join('')+'</ul>';
+  $('org').innerHTML='<div class="tree"><ul>'+roots.map(node).join('')+'</ul></div>';
   Array.prototype.forEach.call(document.querySelectorAll('.card'),function(c){c.onclick=function(){setPersona(c.getAttribute('data-id'))}});
 }
 function renderPill(){
@@ -81,6 +81,7 @@ function drawBrain(b){
   var hg=svg('g',{transform:'translate('+cx+','+cy+')'},layer2);
   svg('circle',{r:62,fill:'#FF7A00'},hg);
   [['Orange',-8],['Brain',12]].forEach(function(w){var q=svg('text',{'text-anchor':'middle','dominant-baseline':'central',y:w[1],fill:'#111','font-size':20,'font-weight':800},hg);q.textContent=w[0]});
+  try{var bb=s.getBBox(),pad=24;s.setAttribute('viewBox',(bb.x-pad)+' '+(bb.y-pad)+' '+(bb.width+2*pad)+' '+(bb.height+2*pad))}catch(e){}
 }
 var brainSeq=0;
 function loadBrain(){

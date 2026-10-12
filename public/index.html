@@ -15,9 +15,10 @@
     <h2>Agent chat</h2>
     <div id="msgs"></div>
     <div class="sugg" id="sugg"></div>
-    <form id="f"><input type="text" id="q" placeholder="Ask your agent..." autocomplete="off"><button class="go" id="send">Ask</button></form>
+    <form id="f"><input type="text" id="q" placeholder="Ask your agent..." autocomplete="off"><button class="go" id="send">Ask</button><button type="button" class="go alt" id="everyone" title="Ask all people the same question">Ask everyone</button></form>
     <div id="tl"><div class="hd"><h2 style="margin:0">Timeline of</h2><select id="tlsel"></select></div><div id="tlist"></div><div class="hidden-note" id="tlhid"></div></div>
   </section>
 </main>
+<div id="ov" hidden><div class="ovbar"><div><h2 id="ovt"></h2><div class="ovsub">Same question. Same brain. Different clearance.</div></div><button type="button" id="ovx" title="Close (Esc)">&#10005;</button></div><div id="ovgrid"></div></div>
 <script src="app.js"></script>
 </body></html>

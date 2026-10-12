@@ -187,6 +187,42 @@ function renderSugg(){
   Array.prototype.forEach.call($('sugg').querySelectorAll('button'),function(b){b.onclick=function(){ask(SUGG[+b.getAttribute('data-i')])}});
 }
 
+/* ---------- ask everyone ---------- */
+var ovSeq=0;
+function closeOv(){ovSeq++;$('ov').hidden=true;document.body.style.overflow=''}
+function badge(p){return p.level!=null?(p.level<0?'Public':'L'+p.level):''}
+function cardBody(c,r){
+  var ans=r.answer||'(no answer)',long=ans.length>350;
+  var h='<div class="oa'+(long?' clip':'')+'" data-full="'+esc(ans)+'" data-short="'+esc(long?ans.slice(0,350).replace(/\s+\S*$/,'')+'\u2026':ans)+'">'+esc(long?ans.slice(0,350).replace(/\s+\S*$/,'')+'\u2026':ans)+'</div>';
+  if(r.action){var done=r.action.status==='done',res=typeof r.action.result==='string'?r.action.result:JSON.stringify(r.action.result);
+    h+='<div class="act '+(done?'done':'blocked')+'"><b>'+(done?'Done: ':'Blocked: ')+esc(r.action.tool)+'</b>'+esc(res||'')+'</div>'}
+  var w=r.withheld||0;
+  h+='<div class="foot"><span class="lock">'+(w?'&#128274; '+w+' withheld':'&#128275; nothing withheld')+'</span>'+((r.sources||[]).length?'<span class="chip">'+r.sources.length+' sources used</span>':'')+'</div>';
+  c.querySelector('.obody').innerHTML=h;
+  var oa=c.querySelector('.oa');
+  if(long){oa.onclick=function(){var open=oa.classList.toggle('open');oa.textContent=oa.getAttribute(open?'data-full':'data-short')}}
+}
+function askEveryone(text){
+  text=(text||'').trim();if(!text)return;
+  if(/\b(file|rerun|draft|create)\b/i.test(text)&&!confirm('This will run the action for everyone. Continue?'))return;
+  var seq=++ovSeq,list=people.slice().sort(function(a,b){return (b.level||0)-(a.level||0)});
+  $('ovt').textContent=text;
+  $('ovgrid').innerHTML=list.map(function(p){
+    return '<div class="ocard'+(p.level<0?' out':'')+'" data-id="'+p.id+'"><div class="ohd"><div><b>'+esc(p.name)+'</b><div class="t">'+esc(p.title||p.role||'')+'</div></div><span class="lvl">'+badge(p)+'</span></div><div class="obody"><div class="trace live"><div class="ts" style="animation-delay:0s"><span class="ic">'+ICON.identity+'</span><span>Signing in as '+esc(p.name)+'\u2026</span></div><div class="ts" style="animation-delay:.9s"><span class="ic">'+ICON.search+'</span><span>Searching the brain\u2026</span></div></div></div></div>';
+  }).join('');
+  $('ov').hidden=false;document.body.style.overflow='hidden';
+  list.forEach(function(p){
+    var c=$('ovgrid').querySelector('[data-id="'+p.id+'"]');
+    j('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({as:p.id,message:text})}).then(function(r){
+      if(seq!==ovSeq)return;cardBody(c,r);
+      if(r.action)loadTimeline();
+    }).catch(function(e){if(seq===ovSeq)c.querySelector('.obody').innerHTML='<div class="act blocked">Error: '+esc(e.message)+'</div>'});
+  });
+}
+$('everyone').onclick=function(){var v=$('q').value;if(!v.trim()){$('q').focus();return}askEveryone(v)};
+$('ovx').onclick=closeOv;
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('ov').hidden)closeOv()});
+
 /* ---------- timeline ---------- */
 var tlSeq=0;
 function fillSelect(){

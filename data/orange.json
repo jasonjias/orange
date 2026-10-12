@@ -1,0 +1,70 @@
+{
+  "company": "Orange",
+  "domain": "orange.test",
+  "people": [
+    {"id": "steve",  "name": "Steve Park",  "title": "CEO",                       "team": "Exec",     "manager": null,    "disclosures": ["clementine", "strawberry", "navel", "exec"]},
+    {"id": "dana",   "name": "Dana Lee",    "title": "VP, Watch Hardware",        "team": "Watch",    "manager": "steve", "disclosures": ["clementine", "strawberry"]},
+    {"id": "riley",  "name": "Riley Kim",   "title": "Watch Firmware Engineer",   "team": "Watch",    "manager": "dana",  "disclosures": ["clementine", "strawberry"]},
+    {"id": "sam",    "name": "Sam Ortiz",   "title": "Watch Engineer (new hire)", "team": "Watch",    "manager": "dana",  "disclosures": []},
+    {"id": "morgan", "name": "Morgan Diaz", "title": "VP, OrangeOS",              "team": "OrangeOS", "manager": "steve", "disclosures": ["navel"]},
+    {"id": "bob",    "name": "Bob Smith",   "title": "OrangeOS Engineer",         "team": "OrangeOS", "manager": "morgan","disclosures": ["navel"]},
+    {"id": "priya",  "name": "Priya Shah",  "title": "Brand Lead",                "team": "Marketing","manager": "steve", "disclosures": []}
+  ],
+  "projects": [
+    {"id": "clementine", "name": "Clementine", "owner": "dana",   "team": "Watch",    "public_hint": "A Watch hardware project. Owner: Dana Lee."},
+    {"id": "strawberry", "name": "Strawberry", "owner": "dana",   "team": "Watch",    "public_hint": "A Watch health project. Owner: Dana Lee."},
+    {"id": "navel",      "name": "Navel",      "owner": "morgan", "team": "OrangeOS", "public_hint": "An OrangeOS software project. Owner: Morgan Diaz."}
+  ],
+  "tools": [
+    {"id": "pulp.file_bug",      "name": "File a Pulp bug",          "requires": "project", "description": "Pulp is Orange's bug tracker. Files a bug against a project. Needs: project, title, severity (P0-P3), assignee team."},
+    {"id": "press.rerun_build",  "name": "Rerun a Press build",      "requires": "project", "description": "Press is Orange's build and CI system. Reruns the latest build for a project and reports the result."},
+    {"id": "exec.weekly_update", "name": "Draft the exec update",    "requires": "exec",    "description": "Drafts the CEO's Monday update across every project: status, risks, cross-project dependencies."},
+    {"id": "grove.who_owns",     "name": "Find an owner in Grove",   "requires": null,      "description": "Grove is the people directory. Looks up who owns a team, product or project, and who they report to."}
+  ],
+  "docs": [
+    {"id": "wiki-mission", "type": "knowledge_base", "title": "Orange mission and values", "project": null, "date": "2026-01-05",
+     "text": "Orange makes personal technology that disappears into your life. Values: craft over speed, privacy by default, and need-to-know secrecy for unannounced products. Orange has three divisions: Hardware (Orange Watch, Orange Phone), Software (OrangeOS), and Services. CEO: Steve Park."},
+    {"id": "wiki-org", "type": "knowledge_base", "title": "Orange org chart (Grove export)", "project": null, "date": "2026-10-01",
+     "text": "Steve Park, CEO. Reports to Steve: Dana Lee (VP, Watch Hardware), Morgan Diaz (VP, OrangeOS), Priya Shah (Brand Lead). Reports to Dana: Riley Kim (Watch Firmware Engineer), Sam Ortiz (Watch Engineer, joined Oct 2026). Reports to Morgan: Bob Smith (OrangeOS Engineer). Project owners: Clementine and Strawberry are owned by Dana Lee. Navel is owned by Morgan Diaz."},
+    {"id": "wiki-disclosure", "type": "knowledge_base", "title": "Disclosure policy (Seed)", "project": null, "date": "2026-03-10",
+     "text": "Unannounced projects are need-to-know. Seed is the disclosure system: it lists who is disclosed on each codename. Being on a team does not mean you are disclosed on its projects. If you are not disclosed, do not ask colleagues for details. Ask the project owner, who can request disclosure for you through Seed. Never mention a codename outside Orange."},
+    {"id": "wiki-codenames", "type": "knowledge_base", "title": "Codename policy", "project": null, "date": "2026-03-10",
+     "text": "Every unannounced project gets a citrus or fruit codename. Codenames are never used in public, in marketing, or with suppliers. Suppliers see only part numbers."},
+    {"id": "wiki-tools", "type": "knowledge_base", "title": "Internal tools guide", "project": null, "date": "2026-06-01",
+     "text": "Pulp: bug tracker. Peel: wiki. Zest: team chat. Grove: people directory and org chart. Press: build and CI system; every project has a nightly Press build. Seed: disclosure system. Ask in #help-tools on Zest if a tool is down."},
+    {"id": "wiki-onboarding", "type": "knowledge_base", "title": "New hire FAQ", "project": null, "date": "2026-09-15",
+     "text": "Week one: get your Grove profile, join Zest channels for your team, set up Pulp and Press. Your manager handles disclosures. You will not see unannounced projects until you are disclosed. That is normal. Who to ask about OrangeOS builds: Bob Smith or #os-builds on Zest. Who to ask about Watch builds: Riley Kim or #watch-builds."},
+    {"id": "wiki-pto", "type": "knowledge_base", "title": "Time off policy", "project": null, "date": "2026-01-05",
+     "text": "Orange has flexible time off. Tell your manager two weeks ahead for anything over three days. Company-wide quiet weeks: last week of December and first week of July."},
+    {"id": "brand-guide", "type": "knowledge_base", "title": "Orange brand guide", "project": null, "date": "2026-05-20",
+     "text": "Brand owner: Priya Shah. Voice: warm, plain, confident, never hype. Short sentences. Say 'you', not 'users'. Never say 'revolutionary' or 'game-changing'. Primary color: Orange #FF7A00 on white. Product names are always capitalised: Orange Watch, Orange Phone, OrangeOS. External copy never mentions codenames, dates, or unannounced features."},
+    {"id": "public-products", "type": "webpage", "title": "Orange products (public website)", "project": null, "date": "2026-09-09",
+     "text": "Orange Watch Series 4: all-day battery, heart-rate and sleep tracking. Orange Phone 3. OrangeOS 9, released September 2026, runs on every Orange device. OrangeOS 9.2 is the next update."},
+    {"id": "allhands-oct", "type": "message", "title": "All-hands notes, Oct 2026", "project": null, "date": "2026-10-02",
+     "text": "Steve: Q4 priorities are quality and shipping OrangeOS 9.2 on time. Three unannounced projects are in flight; owners will share details with disclosed people. Welcome Sam Ortiz to the Watch team. Reminder: no codenames on Zest public channels."},
+
+    {"id": "clem-brief", "type": "knowledge_base", "title": "Clementine project brief", "project": "clementine", "date": "2026-07-01",
+     "text": "Clementine is Orange Watch Series 5 with a microLED display. Owner: Dana Lee. Firmware lead: Riley Kim. Target ship: March 2027. Display supplier: Lumen Optics (part LX-5). Depends on OrangeOS 9.2 for the new display driver."},
+    {"id": "clem-mtg-1", "type": "message", "title": "Clementine weekly sync, Oct 6", "project": "clementine", "date": "2026-10-06",
+     "text": "Display yield at Lumen Optics is 61% against an 85% target. Dana: if yield is under 75% by Nov 15 we slip ship to May 2027. Riley: display driver works on OrangeOS 9.2 beta. Action: Dana to visit Lumen Optics Oct 20."},
+    {"id": "clem-pulp-1", "type": "ticket", "title": "PULP-388: Clementine display flicker at low brightness", "project": "clementine", "date": "2026-10-03",
+     "text": "Severity P1. Assigned: Display team. Reporter: Riley Kim. Flicker below 5% brightness on LX-5 panels. Fix depends on Lumen Optics firmware update."},
+
+    {"id": "straw-brief", "type": "knowledge_base", "title": "Strawberry project brief", "project": "strawberry", "date": "2026-06-15",
+     "text": "Strawberry is a hydration sensor for Orange Watch. Owner: Dana Lee. Firmware lead: Riley Kim. Ships as a software feature in OrangeOS 9.2 on existing Series 4 hardware. Target: OrangeOS 9.2 release, January 15 2027. The sensor API lives in OrangeOS 9.2."},
+    {"id": "straw-mtg-1", "type": "message", "title": "Strawberry weekly sync, Oct 8", "project": "strawberry", "date": "2026-10-08",
+     "text": "Sensor calibration drift is 4% after 8 hours; target is under 2%. Riley is testing a new calibration curve. Press nightly build for Strawberry has failed 3 nights in a row on the calibration unit tests. OrangeOS 9.2 is on track per last sync with the OS team. Status: yellow."},
+    {"id": "straw-pulp-1", "type": "ticket", "title": "PULP-401: Strawberry calibration unit tests failing in Press", "project": "strawberry", "date": "2026-10-09",
+     "text": "Severity P2. Assigned: Watch firmware. Reporter: Riley Kim. test_calibration_curve fails since Oct 7 after the curve change. Blocks nightly builds."},
+
+    {"id": "navel-brief", "type": "knowledge_base", "title": "Navel project brief", "project": "navel", "date": "2026-05-01",
+     "text": "Navel is an on-device assistant in OrangeOS 9.2. Owner: Morgan Diaz. Lead engineer: Bob Smith. Ships with OrangeOS 9.2."},
+    {"id": "navel-mtg-1", "type": "message", "title": "Navel weekly sync, Oct 9", "project": "navel", "date": "2026-10-09",
+     "text": "Navel's model uses 40% more memory than budget on Orange Watch. Morgan: we are slipping the whole OrangeOS 9.2 release three weeks, from January 15 to February 5 2027, to fix it. Bob owns the memory fix. Morgan will tell other teams that depend on 9.2 next week."},
+    {"id": "navel-pulp-1", "type": "ticket", "title": "PULP-395: Navel memory regression on Orange Watch", "project": "navel", "date": "2026-10-07",
+     "text": "Severity P0. Assigned: OrangeOS performance. Reporter: Bob Smith. Navel model uses 1.4x memory budget on Watch. Blocks OrangeOS 9.2."},
+
+    {"id": "exec-board", "type": "knowledge_base", "title": "Board prep notes, Q4", "project": "exec", "date": "2026-10-05",
+     "text": "Steve's board notes: revenue on plan. Biggest risks are Clementine display yield and the OrangeOS 9.2 date. Considering a supplier change for Clementine if Lumen Optics misses Nov 15."}
+  ]
+}

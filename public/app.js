@@ -63,7 +63,9 @@ function drawBrain(b){
       var ng=svg('g',{transform:'translate('+sx+','+sy+')',style:'cursor:default'},layer2);
       var t=svg('title',{},ng);
       if(src.visible){
-        t.textContent=src.title+(src.project?' ['+src.project+']':'')+' (L'+src.level+')';
+        ng.setAttribute('class','node'+(src.id===openId?' open':''));ng.setAttribute('style','cursor:pointer');
+        ng.__id=src.id;ng.onclick=function(){openDoc(src,c.label)};
+        t.textContent=src.title+(src.project?' ['+src.project+']':'')+' (L'+src.level+'). Click to read';
         svg('circle',{r:13,fill:'#FF7A00',stroke:'#ffb066','stroke-width':2},ng);
         svg('circle',{r:5,fill:'#fff3e6'},ng);
       }else{
@@ -83,6 +85,28 @@ function drawBrain(b){
   [['Orange',-8],['Brain',12]].forEach(function(w){var q=svg('text',{'text-anchor':'middle','dominant-baseline':'central',y:w[1],fill:'#111','font-size':20,'font-weight':800},hg);q.textContent=w[0]});
   try{var bb=s.getBBox(),pad=24;s.setAttribute('viewBox',(bb.x-pad)+' '+(bb.y-pad)+' '+(bb.width+2*pad)+' '+(bb.height+2*pad))}catch(e){}
 }
+/* ---------- source detail (click an orange node) ---------- */
+var LEVELS=['L0 public','L1 employee','L2 manager','L3 exec'],openId=null,docSeq=0;
+function markOpen(){Array.prototype.forEach.call(document.querySelectorAll('#graph .node'),function(n){n.classList.remove('open')})}
+function openDoc(src,cat){
+  var seq=++docSeq,box=$('doc');openId=src.id;
+  markOpen();
+  Array.prototype.forEach.call(document.querySelectorAll('#graph .node'),function(n){if(n.__id===src.id)n.classList.add('open')});
+  box.innerHTML='<button class="x" title="Close">&times;</button><div class="k">'+esc(cat)+'</div><h3>'+esc(src.title)+'</h3><div class="body muted">Loading...</div>';
+  box.hidden=false;box.querySelector('.x').onclick=closeDoc;
+  j('/api/doc?as='+encodeURIComponent(me)+'&id='+encodeURIComponent(src.id)).then(function(d){
+    if(seq!==docSeq)return;
+    var chips=(d.project?'<span class="chip proj">'+esc(d.project)+'</span>':'<span class="chip">company-wide</span>')+'<span class="chip">'+esc(LEVELS[d.level]||('L'+d.level))+'</span>'+(d.date?'<span class="chip">'+esc(d.date)+'</span>':'')+(d.type?'<span class="chip">'+esc(String(d.type).replace(/_/g,' '))+'</span>':'');
+    box.innerHTML='<button class="x" title="Close">&times;</button><div class="k">'+esc(cat)+'</div><h3>'+esc(d.title)+'</h3><div class="chips">'+chips+'</div><div class="body">'+esc(d.text||'(no text)')+'</div>';
+    box.querySelector('.x').onclick=closeDoc;
+  }).catch(function(e){
+    if(seq!==docSeq)return;
+    box.querySelector('.body').textContent=e.status===403?'Restricted: above your clearance.':'Could not load this source ('+e.message+').';
+  });
+}
+function closeDoc(){docSeq++;openId=null;$('doc').hidden=true;markOpen()}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDoc()});
+
 var brainSeq=0;
 function loadBrain(){
   var seq=++brainSeq,who=me;
@@ -161,7 +185,7 @@ function loadTimeline(){
 function setPersona(id){
   if(!byId[id])return;
   me=id;try{localStorage.setItem('persona',id)}catch(e){}
-  renderPill();renderOrg();renderChat();loadBrain();loadTimeline();
+  closeDoc();renderPill();renderOrg();renderChat();loadBrain();loadTimeline();
 }
 
 $('f').onsubmit=function(e){e.preventDefault();var v=$('q').value;$('q').value='';ask(v)};

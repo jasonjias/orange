@@ -3,6 +3,7 @@
 // GET  /api/timeline?as=<viewer>&of=<person> -> {items, hidden}
 // GET  /api/org -> people, projects, tools
 // GET  /api/brain?as=<id> -> hub + 5 categories with per-viewer visibility
+// GET  /api/doc?as=<id>&id=<doc> -> full source if visible, else 403
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
@@ -168,10 +169,25 @@ Request an action only if the user asks you to do something. When you request on
 const CATEGORIES = [
   ["contacts", "Contacts"], ["disclosures", "Disclosures"], ["tools", "Tools"], ["documents", "Documents"], ["branding", "Branding"],
 ];
-function brain(viewer) {
+// Seed docs plus bugs filed during the demo (written back from the timeline).
+function allDocs() {
   const filed = loadTimeline().filter((x) => x.tool === "pulp.file_bug" && /PULP-4[1-9]\d/.test(x.summary));
-  const extra = filed.map((x) => ({ id: x.summary.match(/PULP-\d+/)[0].toLowerCase(), category: "documents", title: x.summary.replace(/^Filed /, ""), project: x.project, level: 0 }));
-  const docs = [...ORANGE.docs, ...extra];
+  const extra = filed.map((x) => ({
+    id: x.summary.match(/PULP-\d+/)[0].toLowerCase(), category: "documents", type: "pulp_ticket",
+    title: x.summary.replace(/^Filed /, ""), project: x.project, level: 0, date: x.when.slice(0, 10),
+    text: `${x.summary}. Filed by ${person(x.who)?.name || x.who} with Pulp.`,
+  }));
+  return [...ORANGE.docs, ...extra];
+}
+// One source's full text, only if the viewer clears it. Restricted returns nothing about the doc.
+function doc(viewer, id) {
+  const d = allDocs().find((x) => x.id === id);
+  if (!d || !canSeeDoc(viewer, { level: d.level ?? 0, project: d.project })) return null;
+  return { ...d, level: d.level ?? 0 };
+}
+
+function brain(viewer) {
+  const docs = allDocs();
   return {
     hub: `${ORANGE.company} Company Brain`,
     viewer,
@@ -210,6 +226,10 @@ http.createServer(async (req, res) => {
       return send(res, 200, out);
     }
     if (url.pathname === "/api/brain") return send(res, 200, brain(url.searchParams.get("as") || "steve"));
+    if (url.pathname === "/api/doc") {
+      const d = doc(url.searchParams.get("as") || "steve", url.searchParams.get("id"));
+      return d ? send(res, 200, d) : send(res, 403, { error: "restricted" });
+    }
     if (url.pathname === "/api/timeline") return send(res, 200, timeline(url.searchParams.get("as"), url.searchParams.get("of")));
     if (url.pathname === "/api/org") {
       return send(res, 200, { company: ORANGE.company, people: ORANGE.people, projects: ORANGE.projects, tools: ORANGE.tools });

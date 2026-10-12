@@ -42,6 +42,18 @@ h2{margin:0 0 10px;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;
 #note{color:var(--muted);font-size:13px;min-height:18px}
 #graph{flex:1;min-height:0}
 #graph svg{width:100%;height:100%}
+#graph .node circle{transition:stroke-width .12s}
+#graph .node:hover circle:first-child{stroke:#fff;stroke-width:3.5}
+#graph .node.open circle:first-child{stroke:#fff;stroke-width:4}
+section{position:relative}
+#doc{position:absolute;right:14px;bottom:44px;width:min(380px,calc(100% - 28px));max-height:65%;overflow:auto;background:var(--panel2);border:1px solid var(--orange);border-radius:12px;padding:14px 16px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+#doc[hidden]{display:none}
+#doc .k{color:var(--orange);font-size:12px;letter-spacing:1.5px;text-transform:uppercase}
+#doc h3{margin:4px 28px 8px 0;font-size:18px;line-height:1.3}
+#doc .body{margin-top:10px;font-size:14px;white-space:pre-wrap;color:#d7dbe3}
+#doc .muted{color:var(--muted)}
+#doc .x{position:absolute;top:8px;right:10px;background:none;border:0;color:var(--muted);font-size:22px;cursor:pointer;line-height:1}
+#doc .x:hover{color:var(--text)}
 .legend{color:var(--muted);font-size:13px;display:flex;gap:16px;margin-top:6px}
 /* chat */
 #msgs{flex:1;overflow:auto;display:flex;flex-direction:column;gap:10px;min-height:120px;padding-right:4px}

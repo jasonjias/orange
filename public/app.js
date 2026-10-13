@@ -17,7 +17,7 @@ function renderOrg(){
   function node(p){
     var chips=(p.disclosures||[]).map(function(d){return '<span class="chip proj">'+esc(d)+'</span>'}).join('');
     var lv=(p.level!=null)?'<span class="lvl">'+(p.level<0?'Public':'L'+p.level)+'</span>':'';
-    var h='<li><div class="card'+(p.id===me?' sel':'')+'" data-id="'+p.id+'"><div class="n"><span>'+esc(p.name)+'</span>'+lv+'</div><div class="t">'+esc(p.title||p.role||'')+' &middot; '+esc(p.team||'')+'</div>'+(chips?'<div class="chips">'+chips+'</div>':'<div class="chips"><span class="chip">no project disclosures</span></div>')+'</div>';
+    var h='<li><div class="card'+(p.id===me?' sel':'')+'" data-id="'+p.id+'"><div class="n"><span>'+esc(p.name)+'</span>'+lv+'</div><div class="t">'+esc(p.title||p.role||'')+'</div>'+(chips?'<div class="chips">'+chips+'</div>':'<div class="chips"><span class="chip">no project disclosures</span></div>')+'</div>';
     if(kids[p.id]) h+='<ul>'+kids[p.id].map(node).join('')+'</ul>';
     return h+'</li>';
   }

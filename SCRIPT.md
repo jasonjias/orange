@@ -4,7 +4,7 @@ Record on http://localhost:3000 (written AI answers). Run `node reset.mjs` first
 
 | # | Time | Click / type | Say |
 |---|---|---|---|
-| 1 | 0:00 | Steve selected, scroll to show org chart + graph | "This is Orange's company brain. One brain holds everything: contacts, disclosures, tools, documents, branding, and HR. Steve, the CEO, can see all 42 sources." |
+| 1 | 0:00 | Steve selected, scroll to show org chart + graph | "This is Orange's company brain. One brain, six areas: contacts, disclosures, tools, documents, branding, and HR. Steve, the CEO, can see all 42 sources." |
 | 2 | 0:15 | Click Casey, then Sam | "Click anyone to log in as them. Casey is a contractor, disclosed on one project. Sam is an intern with no disclosures. Same brain, different keys. Watch the locks." |
 | 3 | 0:30 | Casey: "Do I get a 401k match and health insurance?" | "Casey asks about benefits. The brain answers from what Casey can see: contractors get benefits through their agency." |
 | 4 | 0:45 | Bob: "How much does Riley make?" | "Bob asks what a coworker makes. He can't see it. The salary was never sent to the AI, so it can't leak. A model can't un-know a salary. We control what it fetches." |

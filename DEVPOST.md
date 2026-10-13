@@ -21,7 +21,7 @@ Jason, the builder, spent 5.5 years at Apple in pre-release qualification and in
 
 Orange Company Brain is "Google for your company, where your clearance decides what you find and what you can do."
 
-- One brain holds the whole company: contacts, disclosures, tools, documents, branding.
+- One brain holds the whole company, in six areas: contacts, disclosures, tools, documents, branding, and people & HR (Workday: benefits, pay bands, each person's own record).
 - Every person has an agent. It acts with its owner's identity.
 - Two locks decide what a person sees: **level** (contractor, employee, manager, exec) and **project disclosure** (were you let in on that project).
 - The agent can also act: file a bug, rerun a build, draft an exec update. Tools are gated by the same locks.
@@ -52,7 +52,7 @@ Orange Company Brain is "Google for your company, where your clearance decides w
 | Tools | Gated server-side by the same rule. A blocked tool call never runs, whatever the model says. |
 | Write-back | A filed bug is ingested into HydraDB as a new source with the right `acl`, so the next question finds it. |
 | Memory | Past actions feed defaults, so Riley's next ticket reuses P2 and Watch firmware. |
-| Graph | Declared relations between sources build the hub graph: a hub with 5 spokes, lit or greyed by who is viewing. |
+| Graph | Declared relations between sources build the hub graph: the brain in the middle with 6 areas around it (contacts, disclosures, tools, documents, branding, people & HR), each source lit or locked by who is viewing. |
 | App | Node server, vanilla JS UI, a persona switcher in place of login. |
 | Agent LLM | Claude. |
 
@@ -80,18 +80,28 @@ Access rule: a person sees a document only if their level is at least the docume
 - Need-to-know is a product feature, not just a compliance cost: the same data gives different, correct answers to different people.
 - Keep the AI as an implementation detail. The product is the clearance model.
 
-## What's next: the brain as a dispatcher
+## What's next: promote areas to specialist agents
 
-The brain becomes the front door that routes each request to a specialist agent: HR, payroll, payments, Jira, finance, news. It is the company phone tree, except the agent at the end is actually competent.
+Today each person has one agent, and the brain's six areas are data. Next, an area that needs to act gets promoted to a specialist agent:
 
-- This is a hierarchical multi-agent system that mirrors the org chart: one orchestrator, sub-orchestrators per department, tools and workers at the bottom.
-- Disclosure levels live on the data, not in each agent. Every agent inherits the asker's clearance for free, so adding a department never adds a new way to leak.
+| Area | Promoted to | Uses |
+|---|---|---|
+| People & HR | HR agent | Workday |
+| Tools | Engineering agent | Pulp, Press |
+| Branding | Marketing agent | brand guide |
+| Documents, Contacts | stay data | every agent reads them |
+| Disclosures | never an agent | it is the source of the locks on everything else |
+
+Your agent asks the brain, the brain hands the job to a specialist, and the specialist uses its tools. Your clearance travels with the request the whole way down, so no layer can see or do more than you can.
+
+Why specialists: each one sees one area's data and a few tools, so it has less to confuse, fewer wrong tools to pick, and a smaller context. That cuts the room for mistakes, and adding a new specialist never adds a new way to leak.
+
+Also next:
 
 - Port onto digohq/app-starter so real org roles and SSO set each person's HydraDB acl, replacing the persona switcher.
-- Connectors for real tools: Jira, Confluence, Slack, Drive.
+- Connectors for real tools: Jira, Confluence, Slack, Drive, Workday.
 - Disclosure requests: ask the owner for access, with approval and expiry.
 - Audit view for security teams: who asked what, what was withheld, which agent acted. Every action is already a source in the brain, so the audit trail exists today.
-- Revocation that takes effect immediately across the graph.
 
 ## Built with
 

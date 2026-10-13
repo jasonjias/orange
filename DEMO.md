@@ -30,7 +30,7 @@ Answers take 10 to 20 seconds. Say your line while you wait.
 ### 1. The brain (0:00)
 
 - **Click:** view as Steve. Show the hub graph.
-- **Audience sees:** one hub, "Orange Company Brain", with 5 spokes: contacts, disclosures, tools, documents, branding. Every source node is lit.
+- **Audience sees:** one hub, "Orange Company Brain", with 6 areas: contacts, disclosures, tools, documents, branding, people & HR. Every source node is lit.
 - **Data sources behind it:** org chart and team pages (contacts), disclosure policy and a Seed roster per project (disclosures), one page per tool (tools), wiki, meeting notes, Pulp tickets, board notes (documents), brand guide and launch messaging (branding).
 - **Optional:** flip to the HydraDB dashboard graph tab to show the same sources live in the database.
 - **Say:** "One brain for the whole company. Steve is the CEO, so everything is lit."

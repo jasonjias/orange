@@ -52,7 +52,7 @@ Answers take 10 to 20 seconds. Say your line while you wait.
 ### 3. Sam, the intern (1:00)
 
 - **Click:** view as Sam. Paste: `What is Clementine?`
-- **Audience sees:** the agent says it is not disclosed to Sam and names the owner, Dana. A "sources withheld" count shows. The graph greys out the project nodes.
+- **Audience sees:** a plain "I don't know what Clementine is." No owner, no hint. The graph greys out the project nodes.
 - **Say:** "Sam is new. She can find out who to ask, and nothing else."
 
 ### 4. Casey, the contractor (1:30)

@@ -105,6 +105,9 @@ function noLlmAnswer(as, message, chunks) {
   if (/\bfile\b.*\bbug\b/i.test(message)) {
     const title = (message.split(":").slice(1).join(":").trim() || "Bug filed from the company brain").replace(/^./, (c) => c.toUpperCase());
     action = { tool: "pulp.file_bug", args: { project: proj && proj.toLowerCase(), title, severity: "P2", assignee_team: "Triage" } };
+  } else if (/\btime off\b|\bpto\b|\bvacation\b/i.test(message) && /\brequest|\bbook|\btake\b/i.test(message)) {
+    const d = message.match(/(\w{3,9} \d{1,2})\s*(?:to|-|until)\s*(\w{3,9} \d{1,2})/i);
+    action = { tool: "workday.request_time_off", args: d ? { start: d[1], end: d[2] } : {} };
   } else if (/\brerun\b.*\bbuild\b/i.test(message)) {
     action = { tool: "press.rerun_build", args: { project: proj && proj.toLowerCase() } };
   }

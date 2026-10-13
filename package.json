@@ -1,0 +1,7 @@
+{
+  "name": "orange-company-brain",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "node server.mjs" },
+  "dependencies": { "@anthropic-ai/sdk": "^0.133.0" }
+}

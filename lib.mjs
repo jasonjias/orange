@@ -5,9 +5,13 @@ import { fileURLToPath } from "node:url";
 
 export const ROOT = path.dirname(fileURLToPath(import.meta.url));
 
-for (const line of fs.readFileSync(path.join(ROOT, ".env"), "utf8").split("\n")) {
-  const m = line.match(/^([A-Z_]+)=(.*)$/);
-  if (m && !process.env[m[1]]) process.env[m[1]] = m[2];
+// Local dev reads .env; on Vercel the env vars come from project settings.
+const ENV_FILE = path.join(ROOT, ".env");
+if (fs.existsSync(ENV_FILE)) {
+  for (const line of fs.readFileSync(ENV_FILE, "utf8").split("\n")) {
+    const m = line.match(/^([A-Z_]+)=(.*)$/);
+    if (m && !process.env[m[1]]) process.env[m[1]] = m[2];
+  }
 }
 
 export const DB = process.env.HYDRA_DB || "company_brain";

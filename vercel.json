@@ -1,0 +1,5 @@
+{
+  "outputDirectory": "public",
+  "rewrites": [{ "source": "/api/:path*", "destination": "/api/index?__p=:path*" }],
+  "functions": { "api/index.mjs": { "includeFiles": "data/**", "maxDuration": 60 } }
+}

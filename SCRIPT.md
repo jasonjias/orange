@@ -12,7 +12,7 @@ Record on http://localhost:3000 (written AI answers). Run `node reset.mjs` first
 | 6 | 1:15 | Riley: same bug | "Riley is disclosed. The bug is filed, written back into the brain, and her agent reused her defaults from last time." |
 | 7 | 1:30 | Type "What is Clementine?", click Ask everyone | "Same question to everyone at once. CEO down to a reporter outside the company. Same brain, different clearance." |
 | 8 | 1:45 | Close overlay, Steve: "What's at risk across all projects this quarter?" | "Only the full view connects the dots. Steve's agent catches an OS slip that makes another team's 'on track' wrong." |
-| 9 | 1:55 | Back on the graph | "Orange Company Brain. Your clearance decides what you find and what you can do. Built on HydraDB." |
+| 9 | 1:55 | Back on the graph | "Next, each area gets promoted to a specialist agent: HR, Engineering, Marketing. Smaller context, fewer hallucinations, and your clearance travels with every request. Orange Company Brain: your clearance decides what you find and what you can do. Built on HydraDB." |
 
 ## Tips
 

@@ -33,7 +33,7 @@ function renderPill(){
 /* ---------- brain graph ---------- */
 var MOCK_CATS=[
  {id:'contacts',label:'Contacts',sources:[['Org chart',null,0],['Watch team page','clementine',1],['OrangeOS team page','navel',1]]},
- {id:'disclosures',label:'Disclosures',sources:[['Disclosure policy',null,1],['Clementine roster','clementine',1],['Strawberry roster','strawberry',1],['Navel roster','navel',1]]},
+ {id:'disclosures',label:'Access lists',sources:[['Disclosure policy',null,1],['Clementine roster','clementine',1],['Strawberry roster','strawberry',1],['Navel roster','navel',1]]},
  {id:'tools',label:'Tools',sources:[['Pulp',null,1],['Peel',null,1],['Zest',null,1],['Grove',null,1],['Press',null,1],['Seed',null,1]]},
  {id:'documents',label:'Documents',sources:[['Time off policy',null,1],['Strawberry notes','strawberry',1],['Navel notes','navel',1],['Manager playbook',null,2],['Board notes',null,3]]},
  {id:'branding',label:'Branding',sources:[['Brand guide',null,0],['Launch messaging','strawberry',1]]}
@@ -96,7 +96,7 @@ function drawBrain(b){
     });
     var cg=svg('g',{transform:'translate('+x+','+y+')'},layer2);
     svg('circle',{r:40,fill:'#1d2027',stroke:'#FF7A00','stroke-width':3},cg);
-    var tx=svg('text',{'text-anchor':'middle','dominant-baseline':'central',fill:'#f2f3f5','font-size':15,'font-weight':700},cg);tx.textContent=c.label;
+    var words=String(c.label).split(' ');words.forEach(function(w,wi){var tx=svg('text',{'text-anchor':'middle','dominant-baseline':'central',y:(wi-(words.length-1)/2)*16,fill:'#f2f3f5','font-size':15,'font-weight':700},cg);tx.textContent=w});
     var cv=c.sources.filter(function(q){return q.visible}).length;
     var sub=svg('text',{'text-anchor':'middle',y:56,fill:'#8d94a3','font-size':13},cg);sub.textContent=cv+'/'+c.sources.length;
   });

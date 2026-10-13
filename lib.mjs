@@ -24,7 +24,7 @@ export const person = (id) => ORANGE.people.find((p) => p.id === id);
 // Access rule: person.level >= doc.level AND (doc.project is null OR person is disclosed on it).
 export const CATEGORIES = [
   { id: "contacts", label: "Contacts" },
-  { id: "disclosures", label: "Disclosures" },
+  { id: "disclosures", label: "Access lists" },
   { id: "tools", label: "Tools" },
   { id: "documents", label: "Documents" },
   { id: "branding", label: "Branding" },

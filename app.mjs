@@ -224,7 +224,7 @@ Request an action only if the user asks you to do something. When you request on
 }
 
 const CATEGORIES = [
-  ["contacts", "Contacts"], ["disclosures", "Disclosures"], ["tools", "Tools"], ["documents", "Documents"], ["branding", "Branding"],
+  ["contacts", "Contacts"], ["disclosures", "Access lists"], ["tools", "Tools"], ["documents", "Documents"], ["branding", "Branding"],
 ];
 // Seed docs plus bugs filed during the demo (written back from the timeline).
 function allDocs() {

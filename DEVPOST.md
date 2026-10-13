@@ -33,7 +33,7 @@ Orange Company Brain is "Google for your company, where your clearance decides w
 
 | Who | What happens |
 |---|---|
-| Sam, intern | Asks about a hidden project. Gets "not disclosed, ask Dana". |
+| Sam, intern | Asks about a hidden project. Gets "I don't know what that is." To Sam, it doesn't exist. |
 | Casey, contractor | Can read the one project she is disclosed on, but not the employee time off policy. |
 | Bob, engineer | Tries to file a bug on a project he is not disclosed on. The server blocks it. |
 | Riley, engineer | Files the bug. It is saved to the brain and reuses her past defaults. |
@@ -61,7 +61,7 @@ Access rule: a person sees a document only if their level is at least the docume
 ## Challenges
 
 - Making "blocked" mean blocked. Tool gating had to live in the server, not in the prompt.
-- Showing what was withheld without leaking it: the agent can say "N sources withheld" and who owns the project, but not the content or even the titles.
+- Saying nothing at all. If you aren't disclosed on a codename, the server answers "I don't know what that is" before any search or AI runs. No owner, no hint, not even a "you aren't disclosed".
 - Indexing delay after ingest (about 20 to 40 seconds) when we write actions back.
 - Two independent locks (level and project) that had to compose cleanly into a single `acl` list.
 - Designing fake company data where the interesting insight only exists across two walled-off projects.

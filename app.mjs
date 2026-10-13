@@ -130,7 +130,7 @@ function toolAllowed(as, tool, project) {
     if (!project) return { ok: false, why: "Which project?" };
     if (!canSee(as, project)) {
       const pr = ORANGE.projects.find((p) => p.id === project);
-      return { ok: false, why: `You aren't disclosed on ${pr ? pr.name : project}. Owner: ${pr ? person(pr.owner).name : "unknown"}.` };
+      return { ok: false, why: `I don't know what ${pr ? pr.name : project} is.` };
     }
   }
   return { ok: true };
@@ -184,6 +184,17 @@ async function ask(as, message) {
   const trace = [];
   const disc = me.disclosures.length ? me.disclosures.join(", ") : "none";
   trace.push({ step: "identity", text: `Signed in as ${me.name}: ${levelName(me.level)} (L${me.level}), disclosed on: ${disc}` });
+  // Need-to-know: a codename you aren't disclosed on gets "I don't know", decided here, before any search or AI.
+  const unknown = ORANGE.projects.filter((p) => new RegExp(`\\b${p.id}\\b`, "i").test(message) && !canSee(as, p.id));
+  if (unknown.length) {
+    const name = unknown[0].name;
+    const verb = (message.match(/\b(file|rerun|request|draft|create)\b/i) || [])[1];
+    const tool = verb ? { file: "pulp.file_bug", rerun: "press.rerun_build" }[verb.toLowerCase()] || "unknown" : null;
+    trace.push({ step: "withheld", text: `"${name}" matches nothing you can see: nothing searched, nothing sent to the AI` });
+    const action = tool ? { tool, status: "blocked", result: `I don't know what ${name} is.` } : null;
+    if (action) trace.push({ step: "blocked", text: `Server check failed: ${action.result}` });
+    return { as, answer: `I don't know what ${name} is.`, action, sources: [], withheld: 0, trace };
+  }
   const { chunks, withheld } = await search(as, message);
   const nSrc = new Set(chunks.map((c) => c.id)).size;
   trace.push({ step: "search", text: `Searched HydraDB with acl [${email(as)}]: ${nSrc} sources you can see` });
@@ -192,10 +203,10 @@ async function ask(as, message) {
   const myActions = loadTimeline().filter((x) => x.who === as).slice(-8).map((x) => `- ${x.when.slice(0, 10)}: ${x.summary}`).join("\n");
   const tools = ORANGE.tools.map((t) => `- ${t.id}: ${t.description}`).join("\n");
 
-  const prompt = `${me.level < 0 ? "This person is OUTSIDE Orange (public). Only share public information. Never confirm or deny unannounced products or codenames; say Orange doesn't comment on unannounced products and give the press contact.\n" : ""}You are the personal work agent for ${me.name} (${me.title}, ${me.role || "employee"}, level L${me.level ?? "?"}, ${me.team} team) at Orange, today ${new Date().toISOString().slice(0, 10)}.
+  const prompt = `${me.level < 0 ? "This person is OUTSIDE Orange (public). Only share what is in the public context. If it isn't there, just say: I don't know.\n" : ""}You are the personal work agent for ${me.name} (${me.title}, ${me.role || "employee"}, level L${me.level ?? "?"}, ${me.team} team) at Orange, today ${new Date().toISOString().slice(0, 10)}.
 You answer using ONLY the company brain context below. That context is already filtered to what ${me.name.split(" ")[0]} is disclosed on.
 If the context does not contain something, say you can't see it. Never guess details of projects not in the context.
-If a codename is mentioned but you have no details, say they aren't disclosed on it and name the owner if the org chart says who it is.
+If the context doesn't cover what they asked, just say "I don't know." Don't guess, don't explain why, and don't mention disclosures, clearance, or who to ask.
 Cross-check sources: if two sources disagree (for example one says a release is on track and another says it slipped), call it out as a risk and name both sources. Prefer the most recent source.
 Be concise: 2-6 sentences or a short list. Plain words. No em dashes.
 
@@ -225,7 +236,7 @@ Request an action only if the user asks you to do something. When you request on
     if (action.status === "done") trace.push({ step: "memory", text: "Action written to the timeline and back into the brain" });
   }
   // The model writes before enforcement runs, so the server's verdict replaces its answer on a block.
-  if (action && action.status === "blocked") out.answer = `Blocked. ${action.result}` + (/disclosed/.test(action.result) ? " Ask the owner to request disclosure for you in Seed." : me.role === "contractor" ? " As a contractor, go through your agency, Lumen Staffing." : " Ask your manager.");
+  if (action && action.status === "blocked") out.answer = (/^I don't know/.test(action.result) ? "" : "Blocked. ") + action.result + (/^I don't know/.test(action.result) ? "" : me.role === "contractor" ? " As a contractor, go through your agency, Lumen Staffing." : " Ask your manager.");
   const sources = [...new Map(chunks.map((c) => [c.id, c.source_title])).entries()].map(([id, title]) => ({ id, title }));
   return { as, answer: out.answer || "", action, sources, withheld, trace };
 }
@@ -257,9 +268,9 @@ function brain(viewer) {
     viewer,
     categories: CATEGORIES.map(([id, label]) => ({
       id, label,
-      sources: docs.filter((d) => (d.category || "documents") === id).map((d) => {
+      sources: docs.filter((d) => (d.category || "documents") === id).map((d, i) => {
         const visible = canSeeDoc(viewer, { level: d.level ?? 0, project: d.project, viewers: d.viewers });
-        return { id: d.id, title: visible ? d.title : "Restricted", project: d.project, level: d.level ?? 0, visible };
+        return { id: visible ? d.id : `locked-${id}-${i}`, title: visible ? d.title : "Restricted", project: visible ? d.project : null, level: d.level ?? 0, visible };
       }),
     })),
   };

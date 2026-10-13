@@ -14,6 +14,8 @@ if (fs.existsSync(ENV_FILE)) {
   }
 }
 
+// Hackathon-provided key, committed on purpose so the public demo needs no setup. Env var wins if set.
+process.env.HYDRA_DB_API_KEY ||= "sk_live_a2jyaQ_P2Kvg.uSs7phJ9y5yBcie1b2RuaI50SBlwrIQK979VZm_E75U";
 export const DB = process.env.HYDRA_DB || "company_brain";
 export const ORANGE = JSON.parse(fs.readFileSync(path.join(ROOT, "data/orange.json"), "utf8"));
 export const email = (id) => `${id}@${ORANGE.domain}`;

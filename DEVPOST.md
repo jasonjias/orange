@@ -9,7 +9,7 @@ Pick one:
 
 ## Elevator pitch (under 200 characters)
 
-Google for your company. Each person's AI agent searches one shared brain, but HydraDB filters by their clearance first, so it can't leak what it never saw.
+A company brain with role-based access. Ask it anything; what it retrieves depends on who is asking. The model can't leak what it was never allowed to fetch.
 
 ## Inspiration
 
@@ -26,6 +26,10 @@ Orange Company Brain is "Google for your company, where your clearance decides w
 - Two locks decide what a person sees: **level** (contractor, employee, manager, exec) and **project disclosure** (were you let in on that project).
 - The agent can also act: file a bug, rerun a build, draft an exec update. Tools are gated by the same locks.
 - Every action is written back into the brain as a new source, and shown in a per-person timeline that is filtered by who is looking.
+- Every answer shows its steps: who you are, what the search returned, how much was withheld, which tool was requested, and whether the server allowed it.
+- "Ask everyone" sends one question to all nine people at once. Same question, same brain, different clearance.
+
+**Architecture in one line: a frontier model with gated RAG, not one model that knows everything.** A model can't un-know someone's salary once it has seen it. You can control what it is allowed to fetch.
 
 | Who | What happens |
 |---|---|
@@ -33,6 +37,7 @@ Orange Company Brain is "Google for your company, where your clearance decides w
 | Casey, contractor | Can read the one project she is disclosed on, but not the employee time off policy. |
 | Bob, engineer | Tries to file a bug on a project he is not disclosed on. The server blocks it. |
 | Riley, engineer | Files the bug. It is saved to the brain and reuses her past defaults. |
+| Jordan, reporter outside Orange | Asks about a new Watch. Gets only the public website and press contact. |
 | Steve, CEO | Sees across projects and catches a release slip that makes another project's "on track" wrong. |
 
 **The key design point: access is enforced in retrieval, not by prompting the model to keep secrets.** The model only ever receives documents the asker is allowed to see. There is no secret in its context to coax out, so no clever prompt can leak one.
@@ -75,12 +80,17 @@ Access rule: a person sees a document only if their level is at least the docume
 - Need-to-know is a product feature, not just a compliance cost: the same data gives different, correct answers to different people.
 - Keep the AI as an implementation detail. The product is the clearance model.
 
-## What's next
+## What's next: the brain as a dispatcher
+
+The brain becomes the front door that routes each request to a specialist agent: HR, payroll, payments, Jira, finance, news. It is the company phone tree, except the agent at the end is actually competent.
+
+- This is a hierarchical multi-agent system that mirrors the org chart: one orchestrator, sub-orchestrators per department, tools and workers at the bottom.
+- Disclosure levels live on the data, not in each agent. Every agent inherits the asker's clearance for free, so adding a department never adds a new way to leak.
 
 - Port onto digohq/app-starter so real org roles and SSO set each person's HydraDB acl, replacing the persona switcher.
 - Connectors for real tools: Jira, Confluence, Slack, Drive.
 - Disclosure requests: ask the owner for access, with approval and expiry.
-- Audit view for security teams: who asked what, what was withheld.
+- Audit view for security teams: who asked what, what was withheld, which agent acted. Every action is already a source in the brain, so the audit trail exists today.
 - Revocation that takes effect immediately across the graph.
 
 ## Built with

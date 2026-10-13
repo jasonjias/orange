@@ -8,6 +8,7 @@ const catText = {
   tools: "Tools: Orange's internal tools (Pulp, Press, Grove, Seed, Zest, Peel) and who may use them.",
   documents: "Documents: wiki pages, policies, meeting notes, Pulp tickets, board notes and manager-only material.",
   branding: "Branding: the brand guide, public product pages and launch messaging.",
+  hr: "People & HR: Workday. Benefits (health, 401k), pay bands, open roles, the contractor guide, and each person's own Workday record.",
 };
 
 // Old tool sources that may carry stale acls: remove, then re-create below.
@@ -20,7 +21,7 @@ try {
 const withRel = (item, ids) => ({ ...item, relations: { ids } });
 const hub = withRel(toKnowledge({
   id: HUB, type: "knowledge_base", category: "documents", level: 0, project: null, date: "2026-10-12", title: "Orange Company Brain",
-  text: "Orange Company Brain: one brain for Orange. Five spokes: contacts, disclosures, tools, documents, branding. What you find depends on your level and the projects you are disclosed on.",
+  text: "Orange Company Brain: one brain for Orange. Six spokes: contacts, disclosures, tools, documents, branding, people & HR. What you find depends on your level and the projects you are disclosed on.",
 }), CATEGORIES.map((c) => `cat-${c.id}`));
 const cats = CATEGORIES.map((c) => withRel(toKnowledge({
   id: `cat-${c.id}`, type: "knowledge_base", category: c.id, level: 0, project: null, date: "2026-10-12", title: `Orange Company Brain: ${c.label}`, text: catText[c.id],

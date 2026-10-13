@@ -21,24 +21,26 @@ export const ORANGE = JSON.parse(fs.readFileSync(path.join(ROOT, "data/orange.js
 export const email = (id) => `${id}@${ORANGE.domain}`;
 export const person = (id) => ORANGE.people.find((p) => p.id === id);
 
-// Access rule: person.level >= doc.level AND (doc.project is null OR person is disclosed on it).
+// Access rule: person.level >= doc.level AND (doc.project is null OR person is disclosed on it)
+// AND (doc.viewers is absent OR person is named in it). viewers = per-person docs like Workday records.
 export const CATEGORIES = [
   { id: "contacts", label: "Contacts" },
-  { id: "disclosures", label: "Access lists" },
+  { id: "disclosures", label: "Disclosures" },
   { id: "tools", label: "Tools" },
   { id: "documents", label: "Documents" },
   { id: "branding", label: "Branding" },
+  { id: "hr", label: "People & HR" },
 ];
 
-export function canSeeDoc(personId, { level = 0, project = null } = {}) {
+export function canSeeDoc(personId, { level = 0, project = null, viewers = null } = {}) {
   const p = person(personId);
   if (!p) return false;
-  return p.level >= (level || 0) && (!project || p.disclosures.includes(project));
+  return p.level >= (level || 0) && (!project || p.disclosures.includes(project)) && (!viewers || viewers.includes(personId));
 }
 
 // Emails of everyone who can see the doc. undefined = open (all 8 people can see it, no acl).
 export function aclFor(doc) {
-  const d = { level: doc.level || 0, project: doc.project || null };
+  const d = { level: doc.level || 0, project: doc.project || null, viewers: doc.viewers || null };
   const ids = ORANGE.people.filter((p) => canSeeDoc(p.id, d)).map((p) => p.id);
   if (ids.length === ORANGE.people.length) return undefined;
   return ids.map(email);

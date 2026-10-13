@@ -160,6 +160,13 @@
       "requires_level": 0,
       "requires_project": false,
       "description": "Grove is the people directory. Looks up who owns a team, product or project, and who they report to."
+    },
+    {
+      "id": "workday.request_time_off",
+      "name": "Request time off in Workday",
+      "requires_level": 1,
+      "requires_project": false,
+      "description": "Workday time off request. Employees only; contractors use their agency. Needs: start, end (dates), reason optional."
     }
   ],
   "docs": [
@@ -435,7 +442,7 @@
     },
     {
       "id": "mgr-calibration",
-      "category": "documents",
+      "category": "hr",
       "type": "knowledge_base",
       "title": "Q4 performance calibration and headcount (managers only)",
       "project": null,
@@ -482,6 +489,126 @@
       "level": -1,
       "date": "2026-09-09",
       "text": "Orange makes personal technology that disappears into your life. Products: Orange Watch Series 4, Orange Phone 3, OrangeOS 9. Press contact: press@orange.test. Orange does not comment on unannounced products or rumors."
+    },
+    {
+      "id": "hr-401k",
+      "category": "hr",
+      "type": "knowledge_base",
+      "title": "401(k) plan (Workday)",
+      "project": null,
+      "level": 1,
+      "date": "2026-09-01",
+      "text": "Orange 401(k) through Workday: Orange matches 100% of your contributions up to 6% of salary, vested immediately. Eligible: full-time employees. Not eligible: interns and contractors."
+    },
+    {
+      "id": "hr-health",
+      "category": "hr",
+      "type": "knowledge_base",
+      "title": "Health insurance (Workday)",
+      "project": null,
+      "level": 1,
+      "date": "2026-09-01",
+      "text": "Orange health plans through Workday: medical, dental and vision, Orange pays 90% of premiums. Eligible from day one: full-time employees and interns. Contractors are covered by their agency, not Orange. Enroll in Workday within 30 days of your start date."
+    },
+    {
+      "id": "hr-contractor-guide",
+      "category": "hr",
+      "type": "knowledge_base",
+      "title": "Contractor guide",
+      "project": null,
+      "level": 0,
+      "date": "2026-09-01",
+      "text": "If you are a contractor at Orange, you are engaged through Lumen Staffing. Your pay, benefits (health, retirement) and time off run through Lumen Staffing, not Orange Workday. You are not eligible for the Orange 401(k) or Orange health plans. You can access only the projects you are disclosed on. Contractor questions: contractors@orange.test."
+    },
+    {
+      "id": "hr-paybands",
+      "category": "hr",
+      "type": "knowledge_base",
+      "title": "Engineering pay bands 2026 (Workday)",
+      "project": null,
+      "level": 2,
+      "date": "2026-09-01",
+      "text": "Managers only. Engineering pay bands 2026: IC1 $120k-$150k, IC2 $150k-$190k, IC3 $185k-$240k. Interns $45-$55 per hour. Use these for offers and Q4 calibration. Do not share outside management."
+    },
+    {
+      "id": "hr-open-roles",
+      "category": "hr",
+      "type": "webpage",
+      "title": "Open roles at Orange (careers page)",
+      "project": null,
+      "level": -1,
+      "date": "2026-10-01",
+      "text": "Orange is hiring: Senior Display Engineer (Orange Watch), OrangeOS Performance Engineer, Brand Designer. Full-time roles include health insurance and a 401(k) match. Apply at orange.test/careers."
+    },
+    {
+      "id": "hr-record-riley",
+      "category": "hr",
+      "type": "record",
+      "title": "Workday record: Riley Kim",
+      "project": null,
+      "level": 1,
+      "viewers": [
+        "riley",
+        "dana",
+        "steve"
+      ],
+      "date": "2026-10-01",
+      "text": "Workday record for Riley Kim. Title: Watch Firmware Engineer, IC2. Manager: Dana Lee. Salary $182,000. Last review: Exceeds (Q2 2026). Time off balance: 11 days. Benefits: health plan (family), 401(k) at 6%. Visible only to Riley Kim, their manager chain, and the CEO."
+    },
+    {
+      "id": "hr-record-bob",
+      "category": "hr",
+      "type": "record",
+      "title": "Workday record: Bob Smith",
+      "project": null,
+      "level": 1,
+      "viewers": [
+        "bob",
+        "morgan",
+        "steve"
+      ],
+      "date": "2026-10-01",
+      "text": "Workday record for Bob Smith. Title: OrangeOS Engineer, IC2. Manager: Morgan Diaz. Salary $176,000. Last review: Meets (Q2 2026). Time off balance: 6 days. Benefits: health plan (single), 401(k) at 4%. Visible only to Bob Smith, their manager chain, and the CEO."
+    },
+    {
+      "id": "hr-record-sam",
+      "category": "hr",
+      "type": "record",
+      "title": "Workday record: Sam Ortiz",
+      "project": null,
+      "level": 1,
+      "viewers": [
+        "sam",
+        "dana",
+        "steve"
+      ],
+      "date": "2026-10-01",
+      "text": "Workday record for Sam Ortiz. Title: Watch Intern. Manager: Dana Lee. Pay $50 per hour. Internship ends Dec 18 2026. Benefits: health plan (single). Not eligible for 401(k). Visible only to Sam Ortiz, their manager chain, and the CEO."
+    },
+    {
+      "id": "hr-record-casey",
+      "category": "hr",
+      "type": "record",
+      "title": "Workday record: Casey Wu",
+      "project": null,
+      "level": 0,
+      "viewers": [
+        "casey",
+        "dana",
+        "steve"
+      ],
+      "date": "2026-10-01",
+      "text": "Workday record for Casey Wu. Title: Vendor Liaison (contractor via Lumen Staffing). Manager: Dana Lee. Contract rate $140 per hour, paid by Lumen Staffing. Contract ends Mar 31 2027. Not on Orange benefits. Visible only to Casey Wu, their manager chain, and the CEO."
+    },
+    {
+      "id": "tool-workday-request_time_off",
+      "category": "tools",
+      "type": "knowledge_base",
+      "title": "Tool: Request time off in Workday (workday.request_time_off)",
+      "project": null,
+      "level": 1,
+      "date": "2026-09-01",
+      "text": "Workday: request time off. Employees only (L1+); contractors request time off through their agency. Needs: start date, end date."
     }
   ]
 }

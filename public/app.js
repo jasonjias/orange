@@ -4,7 +4,7 @@ var $=function(id){return document.getElementById(id)};
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 var NS='http://www.w3.org/2000/svg';
 var people=[],byId={},me='steve',histories={},pending={};
-var SUGG=["Is Orange working on a new Watch?","What's the status of Strawberry?","What is Clementine?","File a bug on Strawberry: hydration sensor reads zero after reboot","What's at risk across all projects this quarter?","What's our time off policy?"];
+var SUGG=["Is Orange working on a new Watch?","What's the status of Strawberry?","What is Clementine?","File a bug on Strawberry: hydration sensor reads zero after reboot","What's at risk across all projects this quarter?","Do I get a 401k match and health insurance?","How much does Riley make?","Request time off Dec 22 to Dec 26"];
 try{me=localStorage.getItem('persona')||'steve'}catch(e){}
 
 function j(url,opts){return fetch(url,opts).then(function(r){if(!r.ok){var e=new Error('HTTP '+r.status);e.status=r.status;throw e}return r.json()})}
@@ -33,7 +33,7 @@ function renderPill(){
 /* ---------- brain graph ---------- */
 var MOCK_CATS=[
  {id:'contacts',label:'Contacts',sources:[['Org chart',null,0],['Watch team page','clementine',1],['OrangeOS team page','navel',1]]},
- {id:'disclosures',label:'Access lists',sources:[['Disclosure policy',null,1],['Clementine roster','clementine',1],['Strawberry roster','strawberry',1],['Navel roster','navel',1]]},
+ {id:'disclosures',label:'Disclosures',sources:[['Disclosure policy',null,1],['Clementine roster','clementine',1],['Strawberry roster','strawberry',1],['Navel roster','navel',1]]},
  {id:'tools',label:'Tools',sources:[['Pulp',null,1],['Peel',null,1],['Zest',null,1],['Grove',null,1],['Press',null,1],['Seed',null,1]]},
  {id:'documents',label:'Documents',sources:[['Time off policy',null,1],['Strawberry notes','strawberry',1],['Navel notes','navel',1],['Manager playbook',null,2],['Board notes',null,3]]},
  {id:'branding',label:'Branding',sources:[['Brand guide',null,0],['Launch messaging','strawberry',1]]}

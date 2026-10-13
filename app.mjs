@@ -157,6 +157,10 @@ async function runTool(as, action) {
     const outcome = { strawberry: "failed: test_calibration_curve (3/412 tests)", clementine: "passed (1,208 tests)", navel: "failed: memory budget check, 1.3x" }[project] || "passed";
     result = `Press build for ${project}: ${outcome}`;
     summary = `Reran ${project} build: ${outcome}`;
+  } else if (tool === "workday.request_time_off") {
+    const when = [args.start, args.end].filter(Boolean).join(" to ") || "dates TBD";
+    result = `Time off requested in Workday: ${when}. Sent to ${person(person(as).manager)?.name || "your manager"} for approval.`;
+    summary = `Requested time off: ${when}`;
   } else if (tool === "exec.weekly_update") {
     result = "Draft ready (see answer).";
     summary = "Drafted the exec weekly update";
@@ -204,7 +208,7 @@ ${context || "(nothing found)"}
 User says: ${message}
 
 Reply with ONLY a JSON object:
-{"answer": "...", "action": null or {"tool": "<tool id>", "args": {"project": "<project id lowercase>", "title": "...", "severity": "P0-P3", "assignee_team": "...", "details": "..."}}}
+{"answer": "...", "action": null or {"tool": "<tool id>", "args": {"project": "<project id lowercase>", "title": "...", "severity": "P0-P3", "assignee_team": "...", "details": "...", "start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}}}
 Request an action only if the user asks you to do something. When you request one, describe what you are doing in one sentence; do not predict whether it will be allowed. If they ask to act on a project, request it even if you can't see that project; the system will decide.`;
 
   const out = LLM_MODE === "none" ? noLlmAnswer(as, message, chunks) : parseJson(await llm(prompt));
@@ -218,13 +222,13 @@ Request an action only if the user asks you to do something. When you request on
     if (action.status === "done") trace.push({ step: "memory", text: "Action written to the timeline and back into the brain" });
   }
   // The model writes before enforcement runs, so the server's verdict replaces its answer on a block.
-  if (action && action.status === "blocked") out.answer = `Blocked. ${action.result}` + (/disclosed/.test(action.result) ? " Ask the owner to request disclosure for you in Seed." : " Ask your manager.");
+  if (action && action.status === "blocked") out.answer = `Blocked. ${action.result}` + (/disclosed/.test(action.result) ? " Ask the owner to request disclosure for you in Seed." : me.role === "contractor" ? " As a contractor, go through your agency, Lumen Staffing." : " Ask your manager.");
   const sources = [...new Map(chunks.map((c) => [c.id, c.source_title])).entries()].map(([id, title]) => ({ id, title }));
   return { as, answer: out.answer || "", action, sources, withheld, trace };
 }
 
 const CATEGORIES = [
-  ["contacts", "Contacts"], ["disclosures", "Access lists"], ["tools", "Tools"], ["documents", "Documents"], ["branding", "Branding"],
+  ["contacts", "Contacts"], ["disclosures", "Disclosures"], ["tools", "Tools"], ["documents", "Documents"], ["branding", "Branding"], ["hr", "People & HR"],
 ];
 // Seed docs plus bugs filed during the demo (written back from the timeline).
 function allDocs() {
@@ -239,7 +243,7 @@ function allDocs() {
 // One source's full text, only if the viewer clears it. Restricted returns nothing about the doc.
 function doc(viewer, id) {
   const d = allDocs().find((x) => x.id === id);
-  if (!d || !canSeeDoc(viewer, { level: d.level ?? 0, project: d.project })) return null;
+  if (!d || !canSeeDoc(viewer, { level: d.level ?? 0, project: d.project, viewers: d.viewers })) return null;
   return { ...d, level: d.level ?? 0 };
 }
 
@@ -251,7 +255,7 @@ function brain(viewer) {
     categories: CATEGORIES.map(([id, label]) => ({
       id, label,
       sources: docs.filter((d) => (d.category || "documents") === id).map((d) => {
-        const visible = canSeeDoc(viewer, { level: d.level ?? 0, project: d.project });
+        const visible = canSeeDoc(viewer, { level: d.level ?? 0, project: d.project, viewers: d.viewers });
         return { id: d.id, title: visible ? d.title : "Restricted", project: d.project, level: d.level ?? 0, visible };
       }),
     })),

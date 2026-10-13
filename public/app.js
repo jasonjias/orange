@@ -96,7 +96,7 @@ function drawBrain(b){
     });
     var cg=svg('g',{transform:'translate('+x+','+y+')'},layer2);
     svg('circle',{r:40,fill:'#1d2027',stroke:'#FF7A00','stroke-width':3},cg);
-    var words=String(c.label).split(' ');words.forEach(function(w,wi){var tx=svg('text',{'text-anchor':'middle','dominant-baseline':'central',y:(wi-(words.length-1)/2)*16,fill:'#f2f3f5','font-size':15,'font-weight':700},cg);tx.textContent=w});
+    var ws=String(c.label).split(' '),words=ws.length>2?[ws[0],ws.slice(1).join(' ')]:ws;words.forEach(function(w,wi){var tx=svg('text',{'text-anchor':'middle','dominant-baseline':'central',y:(wi-(words.length-1)/2)*16,fill:'#f2f3f5','font-size':15,'font-weight':700},cg);tx.textContent=w});
     var cv=c.sources.filter(function(q){return q.visible}).length;
     var sub=svg('text',{'text-anchor':'middle',y:56,fill:'#8d94a3','font-size':13},cg);sub.textContent=cv+'/'+c.sources.length;
   });

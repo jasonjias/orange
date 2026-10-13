@@ -94,7 +94,7 @@ Today each person has one agent, and the brain's six areas are data. Next, an ar
 
 Your agent asks the brain, the brain hands the job to a specialist, and the specialist uses its tools. Your clearance travels with the request the whole way down, so no layer can see or do more than you can.
 
-Why specialists: each one sees one area's data and a few tools, so it has less to confuse, fewer wrong tools to pick, and a smaller context. That cuts the room for mistakes, and adding a new specialist never adds a new way to leak.
+Why specialists: fewer hallucinations. Each one sees one area's data and a few tools, so it has less to confuse, fewer wrong tools to pick, and a smaller context. And adding a new specialist never adds a new way to leak.
 
 Also next:
 

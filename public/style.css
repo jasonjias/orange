@@ -8,7 +8,7 @@ h1 span{color:var(--orange)}
 .pill{background:var(--panel2);border:1px solid var(--orange);border-radius:999px;padding:8px 18px;font-size:17px}
 .pill b{color:var(--orange)}
 .pill small{color:var(--muted)}
-main{display:grid;grid-template-columns:minmax(420px,1fr) 500px;grid-template-rows:auto 720px;gap:14px;padding:14px}
+main{display:grid;grid-template-columns:minmax(420px,1fr) clamp(500px,42vw,900px);grid-template-rows:auto max(720px,calc(100vh - 110px));gap:14px;padding:14px}
 main>section:first-child{grid-column:1/-1;overflow-x:auto}
 section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;overflow:auto;display:flex;flex-direction:column;min-height:0}
 h2{margin:0 0 10px;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--orange)}

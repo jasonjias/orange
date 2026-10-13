@@ -36,7 +36,9 @@ Only Steve sees both, so only Steve's agent catches that Strawberry is at risk.
 
 ## Files
 - `lib.mjs` config, HydraDB client, acl helpers. `ingest.mjs` loads data (`node ingest.mjs`).
-- `server.mjs` (DONE, `node server.mjs`, port 3000). Agent LLM = local `claude -p --model sonnet`, ~10-20 s per ask.
+- `app.mjs`: all API logic + `handleApi()`. `server.mjs`: local dev server (static + API), `node server.mjs`, port 3000.
+- `api/index.mjs` + `vercel.json`: same API as a Vercel function (rewrite `/api/*` -> `/api/index?__p=*`). Prod: https://orange-snowy-zeta.vercel.app (deploys on push to github.com/jasonjias/orange).
+- LLM: locally the `claude -p` CLI; on Vercel the Claude API (`claude-opus-5-5`) if ANTHROPIC_API_KEY is set, else a retrieval-only answer. Vercel needs env vars HYDRA_DB_API_KEY, HYDRA_DB.
   - `POST /api/ask {as:"riley", message}` -> `{answer, action:{tool,status:"done"|"blocked",result}|null, sources:[{id,title}], withheld:N}`
   - `GET /api/timeline?as=<viewer>&of=<person>` -> `{items:[{who,when,project,tool,summary}], hidden:N}`
   - `GET /api/org` -> `{company, people, projects, tools}`
